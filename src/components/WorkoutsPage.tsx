@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAY_LABEL: Record<string, string> = {
+  Mon: "Seg", Tue: "Ter", Wed: "Qua", Thu: "Qui", Fri: "Sex", Sat: "Sáb", Sun: "Dom",
+};
 type WeekPlan = Record<string, Workout["id"] | "REST" | "CARDIO" | null>;
 
 const defaultPlan: WeekPlan = {
@@ -39,11 +42,11 @@ export const WorkoutsPage = () => {
     const isTrainingDay = todayPlan && todayPlan !== "REST";
     if (isTrainingDay) {
       syncGymTaskToToday(t);
-      toast.success(`Workout time set to ${t === "06:00" ? "6:00 AM" : "6:00 PM"}`, {
-        description: "Today's planner updated",
+      toast.success(`Treino marcado para ${t === "06:00" ? "6:00" : "18:00"}`, {
+        description: "Planner de hoje atualizado",
       });
     } else {
-      toast.success(`Workout time set to ${t === "06:00" ? "6:00 AM" : "6:00 PM"}`);
+      toast.success(`Treino marcado para ${t === "06:00" ? "6:00" : "18:00"}`);
     }
   };
 
