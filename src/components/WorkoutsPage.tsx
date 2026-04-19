@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAY_LABEL: Record<string, string> = {
+  Mon: "Seg", Tue: "Ter", Wed: "Qua", Thu: "Qui", Fri: "Sex", Sat: "Sáb", Sun: "Dom",
+};
 type WeekPlan = Record<string, Workout["id"] | "REST" | "CARDIO" | null>;
 
 const defaultPlan: WeekPlan = {
@@ -39,11 +42,11 @@ export const WorkoutsPage = () => {
     const isTrainingDay = todayPlan && todayPlan !== "REST";
     if (isTrainingDay) {
       syncGymTaskToToday(t);
-      toast.success(`Workout time set to ${t === "06:00" ? "6:00 AM" : "6:00 PM"}`, {
-        description: "Today's planner updated",
+      toast.success(`Treino marcado para ${t === "06:00" ? "6:00" : "18:00"}`, {
+        description: "Planner de hoje atualizado",
       });
     } else {
-      toast.success(`Workout time set to ${t === "06:00" ? "6:00 AM" : "6:00 PM"}`);
+      toast.success(`Treino marcado para ${t === "06:00" ? "6:00" : "18:00"}`);
     }
   };
 
@@ -58,20 +61,20 @@ export const WorkoutsPage = () => {
   };
 
   const presets: { label: string; freq: number; days: WeekPlan }[] = [
-    { label: "3×/week", freq: 3, days: { Mon: "A", Tue: "REST", Wed: "B", Thu: "REST", Fri: "C", Sat: "REST", Sun: "REST" } },
-    { label: "4×/week", freq: 4, days: { Mon: "A", Tue: "B", Wed: "REST", Thu: "C", Fri: "REST", Sat: "D", Sun: "REST" } },
-    { label: "5×/week", freq: 5, days: { Mon: "A", Tue: "B", Wed: "C", Thu: "REST", Fri: "D", Sat: "B", Sun: "REST" } },
-    { label: "6×/week", freq: 6, days: { Mon: "A", Tue: "B", Wed: "C", Thu: "D", Fri: "B", Sat: "CARDIO", Sun: "REST" } },
+    { label: "3×/sem", freq: 3, days: { Mon: "A", Tue: "REST", Wed: "B", Thu: "REST", Fri: "C", Sat: "REST", Sun: "REST" } },
+    { label: "4×/sem", freq: 4, days: { Mon: "A", Tue: "B", Wed: "REST", Thu: "C", Fri: "REST", Sat: "D", Sun: "REST" } },
+    { label: "5×/sem", freq: 5, days: { Mon: "A", Tue: "B", Wed: "C", Thu: "REST", Fri: "D", Sat: "B", Sun: "REST" } },
+    { label: "6×/sem", freq: 6, days: { Mon: "A", Tue: "B", Wed: "C", Thu: "D", Fri: "B", Sat: "CARDIO", Sun: "REST" } },
   ];
 
   const applyPreset = (p: WeekPlan, label: string) => {
     setPlan(p);
-    toast.success(`Set to ${label}`);
+    toast.success(`Definido para ${label}`);
   };
 
   const labelFor = (v: WeekPlan[string]) => {
     if (!v) return "—";
-    if (v === "REST") return "Rest";
+    if (v === "REST") return "Folga";
     if (v === "CARDIO") return "Cardio";
     return v;
   };
@@ -79,17 +82,17 @@ export const WorkoutsPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-medium text-muted-foreground">Hypertrophy beginner plan</p>
-        <h1 className="font-display text-3xl font-bold tracking-tight">Workouts</h1>
+        <p className="text-sm font-medium text-muted-foreground">Plano de hipertrofia (iniciante)</p>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Treinos</h1>
       </div>
 
       {/* Workout time preference */}
       <section className="rounded-3xl bg-card p-4 shadow-card">
-        <h2 className="mb-3 text-sm font-semibold">Preferred workout time</h2>
+        <h2 className="mb-3 text-sm font-semibold">Horário preferido do treino</h2>
         <div className="grid grid-cols-2 gap-2">
           {([
-            { t: "06:00" as WorkoutTime, label: "6:00 AM", sub: "Morning", Icon: Sun },
-            { t: "18:00" as WorkoutTime, label: "6:00 PM", sub: "Evening", Icon: Moon },
+            { t: "06:00" as WorkoutTime, label: "6:00", sub: "Manhã", Icon: Sun },
+            { t: "18:00" as WorkoutTime, label: "18:00", sub: "Noite", Icon: Moon },
           ]).map(({ t, label, sub, Icon }) => {
             const active = workoutTime === t;
             return (
@@ -125,7 +128,7 @@ export const WorkoutsPage = () => {
       <section className="rounded-3xl bg-card p-4 shadow-card">
         <div className="mb-3 flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold">This week — tap a day to change</h2>
+          <h2 className="text-sm font-semibold">Esta semana — toque para mudar</h2>
         </div>
         <div className="grid grid-cols-7 gap-1.5">
           {DAYS.map((d) => {
@@ -145,7 +148,7 @@ export const WorkoutsPage = () => {
                   !v && "bg-muted/50 text-muted-foreground"
                 )}
               >
-                <span className="text-[10px] font-semibold uppercase opacity-80">{d}</span>
+                <span className="text-[10px] font-semibold uppercase opacity-80">{DAY_LABEL[d]}</span>
                 <span className="text-base font-bold">{labelFor(v)}</span>
               </button>
             );
@@ -162,7 +165,7 @@ export const WorkoutsPage = () => {
 
       {/* Workout list */}
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">All workouts</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground">Todos os treinos</h2>
         {WORKOUTS.map((w) => (
           <button
             key={w.id}
@@ -179,7 +182,7 @@ export const WorkoutsPage = () => {
               <p className="text-xs font-semibold uppercase tracking-wider opacity-80">{w.name}</p>
               <p className="text-base font-bold leading-tight">{w.focus}</p>
               <p className="mt-0.5 text-xs opacity-80">
-                {w.sections.find((s) => s.kind === "main")?.exercises.length ?? 0} exercises
+                {w.sections.find((s) => s.kind === "main")?.exercises.length ?? 0} exercícios
               </p>
             </div>
             <ChevronRight className="h-5 w-5 opacity-80" />

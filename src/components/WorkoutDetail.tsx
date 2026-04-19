@@ -11,6 +11,13 @@ const sectionColor: Record<string, string> = {
   cardio: "bg-accent-soft text-accent",
 };
 
+const sectionLabel: Record<string, string> = {
+  stretch: "Alongamento",
+  warmup: "Aquecimento",
+  main: "Principal",
+  cardio: "Cardio",
+};
+
 export const WorkoutDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,8 +26,8 @@ export const WorkoutDetail = () => {
   if (!workout) {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" onClick={() => navigate(-1)}><ChevronLeft className="mr-1 h-4 w-4" />Back</Button>
-        <p>Workout not found.</p>
+        <Button variant="ghost" onClick={() => navigate(-1)}><ChevronLeft className="mr-1 h-4 w-4" />Voltar</Button>
+        <p>Treino não encontrado.</p>
       </div>
     );
   }
@@ -29,17 +36,17 @@ export const WorkoutDetail = () => {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="rounded-full">
-          <ChevronLeft className="mr-1 h-4 w-4" />Back
+          <ChevronLeft className="mr-1 h-4 w-4" />Voltar
         </Button>
       </div>
 
       <div className="rounded-3xl gradient-primary p-6 text-primary-foreground shadow-glow">
         <div className="text-5xl">{workout.emoji}</div>
-        <h1 className="mt-2 text-2xl font-bold">{workout.name}</h1>
+        <h1 className="mt-2 font-display text-2xl font-bold">{workout.name}</h1>
         <p className="opacity-90">{workout.focus}</p>
         <Link to={`/workouts/${workout.id}/start`}>
           <Button className="mt-4 w-full rounded-2xl bg-white text-primary hover:bg-white/90 h-12 text-base font-semibold">
-            <Play className="mr-2 h-5 w-5 fill-current" /> Start workout
+            <Play className="mr-2 h-5 w-5 fill-current" /> Iniciar treino
           </Button>
         </Link>
       </div>
@@ -48,7 +55,7 @@ export const WorkoutDetail = () => {
         <section key={idx} className="space-y-2">
           <div className="flex items-center gap-2">
             <span className={cn("rounded-full px-3 py-1 text-xs font-semibold uppercase", sectionColor[s.kind])}>
-              {s.kind}
+              {sectionLabel[s.kind]}
             </span>
             <h2 className="text-sm font-semibold">{s.title}</h2>
           </div>
@@ -57,7 +64,7 @@ export const WorkoutDetail = () => {
               <div key={ex.id} className="rounded-2xl bg-card p-4 shadow-soft">
                 <p className="font-semibold">{ex.name}</p>
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                  <span><strong className="text-foreground">{ex.sets}</strong> sets</span>
+                  <span><strong className="text-foreground">{ex.sets}</strong> séries</span>
                   <span><strong className="text-foreground">{ex.reps}</strong></span>
                   <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{ex.rest}</span>
                 </div>

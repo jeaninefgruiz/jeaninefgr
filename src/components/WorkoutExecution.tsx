@@ -57,7 +57,7 @@ export const WorkoutExecution = () => {
       setRestLeft((s) => {
         if (s <= 1) {
           setRestRunning(false);
-          toast.success("Rest done — let's go! 💪");
+          toast.success("Descanso terminou — bora! 💪");
           return 0;
         }
         return s - 1;
@@ -71,8 +71,8 @@ export const WorkoutExecution = () => {
   if (!workout || !current) {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" onClick={() => navigate(-1)}><ChevronLeft className="mr-1 h-4 w-4" />Back</Button>
-        <p>Workout not found.</p>
+        <Button variant="ghost" onClick={() => navigate(-1)}><ChevronLeft className="mr-1 h-4 w-4" />Voltar</Button>
+        <p>Treino não encontrado.</p>
       </div>
     );
   }
@@ -113,7 +113,7 @@ export const WorkoutExecution = () => {
     if (!arr.includes(workout.id)) arr.push(workout.id);
     history[today] = arr;
     saveLS(key, history);
-    toast.success(`Workout ${workout.id} complete! 🎉`);
+    toast.success(`Treino ${workout.id} concluído! 🎉`);
     navigate("/stats");
   };
 
@@ -123,7 +123,7 @@ export const WorkoutExecution = () => {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="rounded-full">
-          <ChevronLeft className="mr-1 h-4 w-4" />Exit
+          <ChevronLeft className="mr-1 h-4 w-4" />Sair
         </Button>
         <div className="text-xs font-semibold text-muted-foreground">
           {idx + 1} / {total}
@@ -133,7 +133,7 @@ export const WorkoutExecution = () => {
       {/* Progress */}
       <div className="space-y-1">
         <div className="flex justify-between text-xs font-semibold">
-          <span>Workout progress</span>
+          <span>Progresso do treino</span>
           <span className="text-primary">{progress}%</span>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -144,11 +144,11 @@ export const WorkoutExecution = () => {
       {/* Exercise card */}
       <div className="rounded-3xl bg-card p-5 shadow-card">
         <p className="text-xs font-semibold uppercase tracking-wider text-primary">{workout.name}</p>
-        <h1 className="mt-1 text-2xl font-bold leading-tight">{current.name}</h1>
+        <h1 className="mt-1 font-display text-2xl font-bold leading-tight">{current.name}</h1>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span><strong className="text-foreground">{current.sets}</strong> sets</span>
+          <span><strong className="text-foreground">{current.sets}</strong> séries</span>
           <span><strong className="text-foreground">{current.reps}</strong></span>
-          <span>Rest: <strong className="text-foreground">{current.rest}</strong></span>
+          <span>Descanso: <strong className="text-foreground">{current.rest}</strong></span>
         </div>
         {current.notes && (
           <p className="mt-3 rounded-xl bg-primary-soft p-3 text-xs text-primary">💡 {current.notes}</p>
@@ -158,7 +158,7 @@ export const WorkoutExecution = () => {
         <div className="mt-4 space-y-2">
           <div className="grid grid-cols-[32px_1fr_1fr_44px] items-center gap-2 px-1 text-xs font-semibold text-muted-foreground">
             <span>#</span>
-            <span>Weight</span>
+            <span>Carga</span>
             <span>Reps</span>
             <span></span>
           </div>
@@ -204,7 +204,7 @@ export const WorkoutExecution = () => {
         <div className="animate-slide-up rounded-3xl gradient-warm p-5 text-accent-foreground shadow-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase opacity-90">Rest</p>
+              <p className="text-xs font-semibold uppercase opacity-90">Descanso</p>
               <p className="text-4xl font-bold tabular-nums">{fmt(restLeft)}</p>
             </div>
             <div className="flex gap-2">
@@ -222,15 +222,15 @@ export const WorkoutExecution = () => {
       {/* Nav */}
       <div className="flex gap-2">
         <Button variant="outline" className="flex-1 rounded-2xl h-12" onClick={prev} disabled={idx === 0}>
-          <ChevronLeft className="mr-1 h-4 w-4" /> Prev
+          <ChevronLeft className="mr-1 h-4 w-4" /> Anterior
         </Button>
         {idx < total - 1 ? (
           <Button className="flex-1 rounded-2xl h-12 gradient-primary border-0" onClick={next}>
-            Next <ChevronRight className="ml-1 h-4 w-4" />
+            Próximo <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         ) : (
           <Button className="flex-1 rounded-2xl h-12 gradient-success border-0" onClick={finish}>
-            <Trophy className="mr-1 h-4 w-4" /> Finish
+            <Trophy className="mr-1 h-4 w-4" /> Finalizar
           </Button>
         )}
       </div>

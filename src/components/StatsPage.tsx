@@ -14,7 +14,6 @@ export const StatsPage = () => {
   const weekPlan = loadLS<Record<string, string | null>>("weekPlan", {});
 
   const { streak, weekDone, weekPlanned, last7 } = useMemo(() => {
-    // Streak: consecutive days back from today with at least 1 workout
     let s = 0;
     const today = new Date();
     for (let i = 0; i < 365; i++) {
@@ -22,18 +21,17 @@ export const StatsPage = () => {
       d.setDate(today.getDate() - i);
       const k = dayKey(d);
       if (history[k] && history[k].length > 0) s++;
-      else if (i > 0) break; // allow today empty without breaking
+      else if (i > 0) break;
       else continue;
     }
 
-    // Week: monday..today
     const todayIdx = (today.getDay() + 6) % 7;
     const monday = new Date(today);
     monday.setDate(today.getDate() - todayIdx);
 
     let done = 0;
     const last7Arr: { label: string; done: boolean; today: boolean }[] = [];
-    const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
+    const dayLabels = ["S", "T", "Q", "Q", "S", "S", "D"];
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
@@ -54,16 +52,16 @@ export const StatsPage = () => {
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-sm font-medium text-muted-foreground">Your progress</p>
-        <h1 className="text-3xl font-bold tracking-tight">Stats</h1>
+        <p className="text-sm font-medium text-muted-foreground">Seu progresso</p>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Progresso</h1>
       </div>
 
       <div className="rounded-3xl gradient-warm p-5 text-accent-foreground shadow-card">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm opacity-90">Current streak</p>
+            <p className="text-sm opacity-90">Sequência atual</p>
             <p className="text-5xl font-bold">{streak}</p>
-            <p className="text-sm opacity-90">{streak === 1 ? "day" : "days"} in a row</p>
+            <p className="text-sm opacity-90">{streak === 1 ? "dia" : "dias"} seguidos</p>
           </div>
           <Flame className="h-14 w-14 opacity-90" />
         </div>
@@ -73,19 +71,19 @@ export const StatsPage = () => {
         <div className="rounded-3xl bg-card p-4 shadow-soft">
           <Trophy className="mb-2 h-5 w-5 text-primary" />
           <p className="text-2xl font-bold">{total}</p>
-          <p className="text-xs text-muted-foreground">Total workouts</p>
+          <p className="text-xs text-muted-foreground">Treinos no total</p>
         </div>
         <div className="rounded-3xl bg-card p-4 shadow-soft">
           <Target className="mb-2 h-5 w-5 text-secondary" />
           <p className="text-2xl font-bold">{consistency}%</p>
-          <p className="text-xs text-muted-foreground">This week</p>
+          <p className="text-xs text-muted-foreground">Esta semana</p>
         </div>
       </div>
 
       <div className="rounded-3xl bg-card p-5 shadow-card">
         <div className="mb-3 flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold">This week</h2>
+          <h2 className="text-sm font-semibold">Esta semana</h2>
         </div>
         <div className="flex justify-between gap-2">
           {last7.map((d, i) => (
@@ -106,7 +104,7 @@ export const StatsPage = () => {
           ))}
         </div>
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          {weekDone} of {weekPlanned} planned workouts done
+          {weekDone} de {weekPlanned} treinos planejados concluídos
         </p>
       </div>
     </div>

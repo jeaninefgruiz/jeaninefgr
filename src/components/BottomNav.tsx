@@ -3,10 +3,10 @@ import { Calendar, Dumbbell, BarChart3, Droplet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { to: "/", label: "Today", icon: Calendar },
-  { to: "/workouts", label: "Workouts", icon: Dumbbell },
-  { to: "/habits", label: "Habits", icon: Droplet },
-  { to: "/stats", label: "Stats", icon: BarChart3 },
+  { to: "/", label: "Hoje", icon: Calendar },
+  { to: "/workouts", label: "Treinos", icon: Dumbbell },
+  { to: "/habits", label: "Hábitos", icon: Droplet },
+  { to: "/stats", label: "Progresso", icon: BarChart3 },
 ];
 
 export const BottomNav = () => {

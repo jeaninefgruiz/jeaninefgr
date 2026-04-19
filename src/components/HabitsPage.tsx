@@ -53,15 +53,15 @@ export const HabitsPage = () => {
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-sm font-medium text-muted-foreground">Daily check-in</p>
-        <h1 className="text-3xl font-bold tracking-tight">Habits</h1>
+        <p className="text-sm font-medium text-muted-foreground">Check-in diário</p>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Hábitos</h1>
       </div>
 
-      <Card icon={Droplet} label="Water" value={h.water} unit="cups" goal={goals.water} color="primary"
+      <Card icon={Droplet} label="Água" value={h.water} unit="copos" goal={goals.water} color="primary"
         onChange={(v) => setH((p) => ({ ...p, water: v }))} />
-      <Card icon={Footprints} label="Steps" value={h.steps} unit="" goal={goals.steps} color="secondary" step={500}
+      <Card icon={Footprints} label="Passos" value={h.steps} unit="" goal={goals.steps} color="secondary" step={500}
         onChange={(v) => setH((p) => ({ ...p, steps: v }))} />
-      <Card icon={Moon} label="Sleep" value={h.sleep} unit="hrs" goal={goals.sleep} color="accent"
+      <Card icon={Moon} label="Sono" value={h.sleep} unit="h" goal={goals.sleep} color="accent"
         onChange={(v) => setH((p) => ({ ...p, sleep: v }))} />
     </div>
   );

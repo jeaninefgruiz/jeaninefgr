@@ -20,14 +20,17 @@ type PlannerTask = { id: string; time: string; title: string; done: boolean };
 export const syncGymTaskToToday = (time: WorkoutTime) => {
   const key = `planner:${todayKey()}`;
   const tasks = loadLS<PlannerTask[]>(key, []);
-  const idx = tasks.findIndex((t) => t.title.toLowerCase().includes("gym session"));
+  const idx = tasks.findIndex((t) => {
+    const title = t.title.toLowerCase();
+    return title.includes("treino") || title.includes("academia") || title.includes("gym");
+  });
   if (idx >= 0) {
     tasks[idx] = { ...tasks[idx], time };
   } else {
     tasks.push({
       id: crypto.randomUUID(),
       time,
-      title: "Gym session",
+      title: "Treino na academia",
       done: false,
     });
   }
