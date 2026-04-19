@@ -17,10 +17,10 @@ type Task = {
 const HOURS = Array.from({ length: 17 }, (_, i) => 6 + i); // 6..22
 
 const seedTasks = (): Task[] => [
-  { id: "s1", time: "07:00", title: "Morning water + stretch", done: false },
-  { id: "s2", time: "08:00", title: "Breakfast", done: false },
-  { id: "s3", time: "18:00", title: "Gym session", done: false },
-  { id: "s4", time: "22:00", title: "Sleep", done: false },
+  { id: "s1", time: "07:00", title: "Água + alongamento matinal", done: false },
+  { id: "s2", time: "08:00", title: "Café da manhã", done: false },
+  { id: "s3", time: "18:00", title: "Treino na academia", done: false },
+  { id: "s4", time: "22:00", title: "Dormir", done: false },
 ];
 
 const storageKey = () => `planner:${todayKey()}`;
@@ -51,10 +51,10 @@ export const DailyPlanner = () => {
     if (!form.title.trim()) return;
     if (editing) {
       setTasks((prev) => prev.map((t) => (t.id === editing.id ? { ...t, ...form } : t)));
-      toast.success("Task updated");
+      toast.success("Tarefa atualizada");
     } else {
       setTasks((prev) => [...prev, { id: crypto.randomUUID(), time: form.time, title: form.title.trim(), done: false }]);
-      toast.success("Task added");
+      toast.success("Tarefa adicionada");
     }
     setDialogOpen(false);
   };
@@ -74,7 +74,7 @@ export const DailyPlanner = () => {
     return map;
   }, [sorted]);
 
-  const today = new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+  const today = new Date().toLocaleDateString("pt-BR", { weekday: "long", month: "short", day: "numeric" });
 
   return (
     <div className="space-y-5">
@@ -82,7 +82,7 @@ export const DailyPlanner = () => {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{today}</p>
-          <h1 className="text-3xl font-bold tracking-tight">Today</h1>
+          <h1 className="font-display text-3xl font-bold tracking-tight">Hoje</h1>
         </div>
         <Button size="icon" onClick={openAdd} className="h-12 w-12 rounded-2xl shadow-glow gradient-primary border-0">
           <Plus className="h-5 w-5" />
@@ -93,7 +93,7 @@ export const DailyPlanner = () => {
       <div className="rounded-3xl gradient-primary p-5 text-primary-foreground shadow-glow">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm opacity-90">Daily progress</p>
+            <p className="text-sm opacity-90">Progresso do dia</p>
             <p className="text-4xl font-bold">{progress}%</p>
           </div>
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur">
@@ -104,7 +104,7 @@ export const DailyPlanner = () => {
           <div className="h-full rounded-full bg-white transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
         <p className="mt-2 text-xs opacity-90">
-          {tasks.filter((t) => t.done).length} of {tasks.length} tasks done
+          {tasks.filter((t) => t.done).length} de {tasks.length} tarefas concluídas
         </p>
       </div>
 
@@ -112,7 +112,7 @@ export const DailyPlanner = () => {
       <div className="space-y-1">
         {HOURS.map((h) => {
           const items = tasksByHour.get(h) ?? [];
-          const label = `${((h + 11) % 12) + 1}${h < 12 ? " AM" : " PM"}`;
+          const label = `${String(h).padStart(2, "0")}:00`;
           return (
             <div key={h} className="flex gap-3">
               <div className="w-14 pt-3 text-right text-xs font-medium text-muted-foreground">{label}</div>
@@ -168,11 +168,11 @@ export const DailyPlanner = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="rounded-3xl">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit task" : "New task"}</DialogTitle>
+            <DialogTitle>{editing ? "Editar tarefa" : "Nova tarefa"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Time</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Horário</label>
               <Input
                 type="time"
                 value={form.time}
@@ -181,9 +181,9 @@ export const DailyPlanner = () => {
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">What are you doing?</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">O que você vai fazer?</label>
               <Input
-                placeholder="e.g. Gym session"
+                placeholder="ex.: Treino na academia"
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 className="rounded-xl"
@@ -192,8 +192,8 @@ export const DailyPlanner = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={save} className="gradient-primary border-0">{editing ? "Save" : "Add"}</Button>
+            <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={save} className="gradient-primary border-0">{editing ? "Salvar" : "Adicionar"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
