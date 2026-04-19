@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Calendar } from "lucide-react";
+import { ChevronRight, Calendar, Sun, Moon } from "lucide-react";
 import { WORKOUTS, Workout } from "@/data/workouts";
 import { cn } from "@/lib/utils";
 import { loadLS, saveLS } from "@/lib/storage";
+import { loadPrefs, savePrefs, syncGymTaskToToday, type WorkoutTime } from "@/lib/prefs";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -23,12 +24,28 @@ const colorMap: Record<Workout["color"], string> = {
 export const WorkoutsPage = () => {
   const navigate = useNavigate();
   const [plan, setPlan] = useState<WeekPlan>(() => loadLS<WeekPlan>("weekPlan", defaultPlan));
+  const [workoutTime, setWorkoutTime] = useState<WorkoutTime>(() => loadPrefs().workoutTime);
   useEffect(() => saveLS("weekPlan", plan), [plan]);
 
   const todayName = useMemo(() => {
     const idx = (new Date().getDay() + 6) % 7;
     return DAYS[idx];
   }, []);
+
+  const chooseTime = (t: WorkoutTime) => {
+    setWorkoutTime(t);
+    savePrefs({ workoutTime: t });
+    const todayPlan = plan[todayName];
+    const isTrainingDay = todayPlan && todayPlan !== "REST";
+    if (isTrainingDay) {
+      syncGymTaskToToday(t);
+      toast.success(`Workout time set to ${t === "06:00" ? "6:00 AM" : "6:00 PM"}`, {
+        description: "Today's planner updated",
+      });
+    } else {
+      toast.success(`Workout time set to ${t === "06:00" ? "6:00 AM" : "6:00 PM"}`);
+    }
+  };
 
   const cycle = (day: string) => {
     const order: (Workout["id"] | "REST" | "CARDIO" | null)[] = ["A", "B", "C", "D", "CARDIO", "REST", null];
@@ -63,8 +80,46 @@ export const WorkoutsPage = () => {
     <div className="space-y-6">
       <div>
         <p className="text-sm font-medium text-muted-foreground">Hypertrophy beginner plan</p>
-        <h1 className="text-3xl font-bold tracking-tight">Workouts</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Workouts</h1>
       </div>
+
+      {/* Workout time preference */}
+      <section className="rounded-3xl bg-card p-4 shadow-card">
+        <h2 className="mb-3 text-sm font-semibold">Preferred workout time</h2>
+        <div className="grid grid-cols-2 gap-2">
+          {([
+            { t: "06:00" as WorkoutTime, label: "6:00 AM", sub: "Morning", Icon: Sun },
+            { t: "18:00" as WorkoutTime, label: "6:00 PM", sub: "Evening", Icon: Moon },
+          ]).map(({ t, label, sub, Icon }) => {
+            const active = workoutTime === t;
+            return (
+              <button
+                key={t}
+                onClick={() => chooseTime(t)}
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl border-2 p-3 text-left transition-all active:scale-[0.98]",
+                  active
+                    ? "border-primary bg-primary-soft shadow-glow"
+                    : "border-border bg-background hover:border-primary/40"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-xl",
+                    active ? "gradient-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">{label}</p>
+                  <p className="text-xs text-muted-foreground">{sub}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Weekly planner */}
       <section className="rounded-3xl bg-card p-4 shadow-card">
