@@ -7,54 +7,54 @@
 /* My Routine & Gym Planner — soft, modern, motivating */
 @layer base {
   :root {
-    --background: 220 30% 98%;
-    --foreground: 222 25% 14%;
+    --background: 340 40% 99%;
+    --foreground: 320 25% 16%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 25% 14%;
+    --card-foreground: 320 25% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 25% 14%;
+    --popover-foreground: 320 25% 16%;
 
-    /* Primary: vibrant indigo-violet — energy + focus */
-    --primary: 250 84% 60%;
+    /* Primary: soft rose-mauve — feminine + modern */
+    --primary: 340 65% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-soft: 250 95% 96%;
-    --primary-glow: 265 90% 70%;
+    --primary-soft: 340 80% 96%;
+    --primary-glow: 320 70% 72%;
 
-    /* Secondary: minty success */
-    --secondary: 160 70% 45%;
+    /* Secondary: soft sage green — calm success */
+    --secondary: 155 35% 55%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-soft: 160 70% 95%;
+    --secondary-soft: 155 45% 94%;
 
-    /* Accent: warm coral for streaks/cardio */
-    --accent: 14 95% 62%;
+    /* Accent: warm peach — streaks/cardio */
+    --accent: 22 90% 70%;
     --accent-foreground: 0 0% 100%;
-    --accent-soft: 14 100% 96%;
+    --accent-soft: 22 95% 95%;
 
-    --muted: 220 20% 95%;
-    --muted-foreground: 220 12% 45%;
+    --muted: 330 25% 95%;
+    --muted-foreground: 320 10% 48%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 75% 62%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 91%;
-    --input: 220 20% 91%;
-    --ring: 250 84% 60%;
+    --border: 330 25% 92%;
+    --input: 330 25% 92%;
+    --ring: 340 65% 62%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(250 84% 60%), hsl(265 90% 70%));
-    --gradient-success: linear-gradient(135deg, hsl(160 70% 45%), hsl(180 70% 50%));
-    --gradient-warm: linear-gradient(135deg, hsl(14 95% 62%), hsl(35 95% 60%));
-    --gradient-hero: linear-gradient(160deg, hsl(250 95% 97%) 0%, hsl(220 30% 98%) 50%, hsl(160 70% 96%) 100%);
+    /* Gradients — softer, dreamier */
+    --gradient-primary: linear-gradient(135deg, hsl(340 75% 70%), hsl(320 70% 72%));
+    --gradient-success: linear-gradient(135deg, hsl(155 40% 60%), hsl(170 40% 62%));
+    --gradient-warm: linear-gradient(135deg, hsl(22 90% 72%), hsl(8 85% 72%));
+    --gradient-hero: linear-gradient(160deg, hsl(340 80% 97%) 0%, hsl(340 40% 99%) 50%, hsl(155 45% 96%) 100%);
 
-    /* Shadows */
-    --shadow-soft: 0 2px 12px -2px hsl(250 50% 30% / 0.08);
-    --shadow-card: 0 4px 20px -4px hsl(250 50% 30% / 0.1);
-    --shadow-glow: 0 8px 32px -8px hsl(250 84% 60% / 0.4);
-    --shadow-success: 0 8px 24px -8px hsl(160 70% 45% / 0.4);
+    /* Shadows — softer, blush-tinted */
+    --shadow-soft: 0 2px 12px -2px hsl(340 40% 40% / 0.06);
+    --shadow-card: 0 4px 20px -6px hsl(340 40% 40% / 0.08);
+    --shadow-glow: 0 8px 28px -8px hsl(340 65% 62% / 0.35);
+    --shadow-success: 0 8px 24px -8px hsl(155 35% 55% / 0.35);
 
     /* Transitions */
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -71,29 +71,29 @@
   }
 
   .dark {
-    --background: 230 25% 8%;
-    --foreground: 220 20% 96%;
-    --card: 230 25% 11%;
-    --card-foreground: 220 20% 96%;
-    --popover: 230 25% 11%;
-    --popover-foreground: 220 20% 96%;
-    --primary: 250 84% 65%;
+    --background: 330 20% 9%;
+    --foreground: 330 15% 95%;
+    --card: 330 18% 12%;
+    --card-foreground: 330 15% 95%;
+    --popover: 330 18% 12%;
+    --popover-foreground: 330 15% 95%;
+    --primary: 340 70% 68%;
     --primary-foreground: 0 0% 100%;
-    --primary-soft: 250 40% 18%;
-    --primary-glow: 265 90% 75%;
-    --secondary: 160 70% 50%;
-    --secondary-foreground: 230 25% 8%;
-    --secondary-soft: 160 40% 15%;
-    --accent: 14 95% 65%;
-    --accent-foreground: 230 25% 8%;
-    --accent-soft: 14 40% 18%;
-    --muted: 230 20% 16%;
-    --muted-foreground: 220 12% 65%;
-    --destructive: 0 70% 55%;
+    --primary-soft: 340 30% 20%;
+    --primary-glow: 320 70% 75%;
+    --secondary: 155 40% 55%;
+    --secondary-foreground: 330 20% 9%;
+    --secondary-soft: 155 30% 16%;
+    --accent: 22 85% 70%;
+    --accent-foreground: 330 20% 9%;
+    --accent-soft: 22 30% 20%;
+    --muted: 330 15% 17%;
+    --muted-foreground: 330 10% 65%;
+    --destructive: 0 70% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 230 20% 18%;
-    --input: 230 20% 18%;
-    --ring: 250 84% 65%;
+    --border: 330 15% 20%;
+    --input: 330 15% 20%;
+    --ring: 340 70% 68%;
   }
 }
 
@@ -108,6 +108,10 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em;
   }
 }
 
