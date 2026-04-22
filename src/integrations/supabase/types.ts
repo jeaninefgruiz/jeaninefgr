@@ -14,7 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      habits_daily: {
+        Row: {
+          day: string
+          id: string
+          sleep: number
+          steps: number
+          updated_at: string
+          user_id: string
+          water: number
+        }
+        Insert: {
+          day: string
+          id?: string
+          sleep?: number
+          steps?: number
+          updated_at?: string
+          user_id: string
+          water?: number
+        }
+        Update: {
+          day?: string
+          id?: string
+          sleep?: number
+          steps?: number
+          updated_at?: string
+          user_id?: string
+          water?: number
+        }
+        Relationships: []
+      }
+      planner_tasks: {
+        Row: {
+          created_at: string
+          day: string
+          done: boolean
+          id: string
+          time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          done?: boolean
+          id?: string
+          time: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          done?: boolean
+          id?: string
+          time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_prefs: {
+        Row: {
+          updated_at: string
+          user_id: string
+          workout_time: string
+        }
+        Insert: {
+          updated_at?: string
+          user_id: string
+          workout_time?: string
+        }
+        Update: {
+          updated_at?: string
+          user_id?: string
+          workout_time?: string
+        }
+        Relationships: []
+      }
+      week_plan: {
+        Row: {
+          plan: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          plan?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          plan?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workout_history: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          user_id: string
+          workout_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          id?: string
+          user_id: string
+          workout_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          user_id?: string
+          workout_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
