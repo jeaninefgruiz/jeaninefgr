@@ -5,7 +5,9 @@ import { WORKOUT_BY_ID, Workout, Exercise } from "@/data/workouts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { loadLS, saveLS, todayKey } from "@/lib/storage";
+import { todayKey } from "@/lib/storage";
+import { logWorkoutDone } from "@/lib/cloudStorage";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 type SetLog = { weight: string; reps: string; done: boolean };
@@ -22,6 +24,7 @@ const parseSets = (s: string) => Math.max(1, parseInt(s, 10) || 3);
 export const WorkoutExecution = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const workout = id ? WORKOUT_BY_ID[id as Workout["id"]] : undefined;
 
   const flatExercises = useMemo<Exercise[]>(() => {
