@@ -5,7 +5,9 @@ import { WORKOUT_BY_ID, Workout, Exercise } from "@/data/workouts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { loadLS, saveLS, todayKey } from "@/lib/storage";
+import { todayKey } from "@/lib/storage";
+import { logWorkoutDone } from "@/lib/cloudStorage";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 type SetLog = { weight: string; reps: string; done: boolean };
@@ -22,6 +24,7 @@ const parseSets = (s: string) => Math.max(1, parseInt(s, 10) || 3);
 export const WorkoutExecution = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const workout = id ? WORKOUT_BY_ID[id as Workout["id"]] : undefined;
 
   const flatExercises = useMemo<Exercise[]>(() => {
@@ -104,15 +107,14 @@ export const WorkoutExecution = () => {
   const next = () => setIdx((i) => Math.min(total - 1, i + 1));
   const prev = () => setIdx((i) => Math.max(0, i - 1));
 
-  const finish = () => {
-    // Save completion
-    const key = "workoutHistory";
-    const history = loadLS<Record<string, string[]>>(key, {});
-    const today = todayKey();
-    const arr = history[today] ?? [];
-    if (!arr.includes(workout.id)) arr.push(workout.id);
-    history[today] = arr;
-    saveLS(key, history);
+  const finish = async () => {
+    if (user) {
+      try {
+        await logWorkoutDone(user.id, todayKey(), workout.id);
+      } catch (e) {
+        console.error(e);
+      }
+    }
     toast.success(`Treino ${workout.id} concluído! 🎉`);
     navigate("/stats");
   };

@@ -1,16 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Droplet, Footprints, Moon, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { loadLS, saveLS, todayKey } from "@/lib/storage";
+import { todayKey } from "@/lib/storage";
+import { fetchHabits, saveHabits, type Habits } from "@/lib/cloudStorage";
+import { useAuth } from "@/hooks/useAuth";
 
-type Habits = { water: number; steps: number; sleep: number };
-
-const key = () => `habits:${todayKey()}`;
 const goals = { water: 8, steps: 8000, sleep: 8 };
 
 export const HabitsPage = () => {
-  const [h, setH] = useState<Habits>(() => loadLS<Habits>(key(), { water: 0, steps: 0, sleep: 0 }));
-  useEffect(() => saveLS(key(), h), [h]);
+  const { user } = useAuth();
+  const [h, setH] = useState<Habits>({ water: 0, steps: 0, sleep: 0 });
+  const day = todayKey();
+  const loadedRef = useRef(false);
+  const saveTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchHabits(user.id, day).then((data) => {
+      setH(data);
+      loadedRef.current = true;
+    });
+  }, [user, day]);
+
+  useEffect(() => {
+    if (!user || !loadedRef.current) return;
+    if (saveTimer.current) window.clearTimeout(saveTimer.current);
+    saveTimer.current = window.setTimeout(() => {
+      saveHabits(user.id, day, h);
+    }, 400);
+  }, [h, user, day]);
 
   const Card = ({
     icon: Icon, label, value, unit, goal, onChange, color, step = 1,

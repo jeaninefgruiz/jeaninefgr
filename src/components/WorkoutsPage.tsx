@@ -2,8 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { ChevronRight, Calendar, Sun, Moon } from "lucide-react";
 import { WORKOUTS, Workout } from "@/data/workouts";
 import { cn } from "@/lib/utils";
-import { loadLS, saveLS } from "@/lib/storage";
-import { loadPrefs, savePrefs, syncGymTaskToToday, type WorkoutTime } from "@/lib/prefs";
+import { fetchWeekPlan, saveWeekPlan, fetchPrefs, savePrefs as savePrefsCloud, type WeekPlan, type WorkoutTime } from "@/lib/cloudStorage";
+import { syncGymTaskToToday } from "@/lib/prefs";
+import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -12,7 +13,6 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const DAY_LABEL: Record<string, string> = {
   Mon: "Seg", Tue: "Ter", Wed: "Qua", Thu: "Qui", Fri: "Sex", Sat: "Sáb", Sun: "Dom",
 };
-type WeekPlan = Record<string, Workout["id"] | "REST" | "CARDIO" | null>;
 
 const defaultPlan: WeekPlan = {
   Mon: "A", Tue: "B", Wed: "REST", Thu: "C", Fri: "B", Sat: "D", Sun: "REST",
@@ -26,22 +26,33 @@ const colorMap: Record<Workout["color"], string> = {
 
 export const WorkoutsPage = () => {
   const navigate = useNavigate();
-  const [plan, setPlan] = useState<WeekPlan>(() => loadLS<WeekPlan>("weekPlan", defaultPlan));
-  const [workoutTime, setWorkoutTime] = useState<WorkoutTime>(() => loadPrefs().workoutTime);
-  useEffect(() => saveLS("weekPlan", plan), [plan]);
+  const { user } = useAuth();
+  const [plan, setPlan] = useState<WeekPlan>(defaultPlan);
+  const [workoutTime, setWorkoutTime] = useState<WorkoutTime>("18:00");
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    Promise.all([fetchWeekPlan(user.id), fetchPrefs(user.id)]).then(([p, prefs]) => {
+      if (p && Object.keys(p).length > 0) setPlan(p);
+      setWorkoutTime(prefs.workoutTime);
+      setLoaded(true);
+    });
+  }, [user]);
 
   const todayName = useMemo(() => {
     const idx = (new Date().getDay() + 6) % 7;
     return DAYS[idx];
   }, []);
 
-  const chooseTime = (t: WorkoutTime) => {
+  const chooseTime = async (t: WorkoutTime) => {
+    if (!user) return;
     setWorkoutTime(t);
-    savePrefs({ workoutTime: t });
+    await savePrefsCloud(user.id, t);
     const todayPlan = plan[todayName];
     const isTrainingDay = todayPlan && todayPlan !== "REST";
     if (isTrainingDay) {
-      syncGymTaskToToday(t);
+      await syncGymTaskToToday(user.id, t);
       toast.success(`Treino marcado para ${t === "06:00" ? "6:00" : "18:00"}`, {
         description: "Planner de hoje atualizado",
       });
@@ -50,14 +61,15 @@ export const WorkoutsPage = () => {
     }
   };
 
-  const cycle = (day: string) => {
+  const cycle = async (day: string) => {
+    if (!user) return;
     const order: (Workout["id"] | "REST" | "CARDIO" | null)[] = ["A", "B", "C", "D", "CARDIO", "REST", null];
-    setPlan((p) => {
-      const cur = p[day];
-      const i = order.indexOf(cur ?? null);
-      const next = order[(i + 1) % order.length];
-      return { ...p, [day]: next };
-    });
+    const cur = plan[day];
+    const i = order.indexOf((cur as Workout["id"] | "REST" | "CARDIO" | null) ?? null);
+    const next = order[(i + 1) % order.length];
+    const newPlan = { ...plan, [day]: next };
+    setPlan(newPlan);
+    await saveWeekPlan(user.id, newPlan);
   };
 
   const presets: { label: string; freq: number; days: WeekPlan }[] = [
@@ -67,8 +79,10 @@ export const WorkoutsPage = () => {
     { label: "6×/sem", freq: 6, days: { Mon: "A", Tue: "B", Wed: "C", Thu: "D", Fri: "B", Sat: "CARDIO", Sun: "REST" } },
   ];
 
-  const applyPreset = (p: WeekPlan, label: string) => {
+  const applyPreset = async (p: WeekPlan, label: string) => {
+    if (!user) return;
     setPlan(p);
+    await saveWeekPlan(user.id, p);
     toast.success(`Definido para ${label}`);
   };
 
@@ -86,7 +100,6 @@ export const WorkoutsPage = () => {
         <h1 className="font-display text-3xl font-bold tracking-tight">Treinos</h1>
       </div>
 
-      {/* Workout time preference */}
       <section className="rounded-3xl bg-card p-4 shadow-card">
         <h2 className="mb-3 text-sm font-semibold">Horário preferido do treino</h2>
         <div className="grid grid-cols-2 gap-2">
@@ -124,7 +137,6 @@ export const WorkoutsPage = () => {
         </div>
       </section>
 
-      {/* Weekly planner */}
       <section className="rounded-3xl bg-card p-4 shadow-card">
         <div className="mb-3 flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
@@ -163,7 +175,6 @@ export const WorkoutsPage = () => {
         </div>
       </section>
 
-      {/* Workout list */}
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-muted-foreground">Todos os treinos</h2>
         {WORKOUTS.map((w) => (

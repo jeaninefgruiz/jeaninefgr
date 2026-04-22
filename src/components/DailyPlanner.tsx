@@ -3,35 +3,26 @@ import { Plus, Check, Trash2, Pencil, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { loadLS, saveLS, todayKey } from "@/lib/storage";
+import { todayKey } from "@/lib/storage";
+import { fetchPlanner, upsertPlannerTask, deletePlannerTask, type PlannerTask } from "@/lib/cloudStorage";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-type Task = {
-  id: string;
-  time: string; // HH:mm
-  title: string;
-  done: boolean;
-};
-
 const HOURS = Array.from({ length: 17 }, (_, i) => 6 + i); // 6..22
 
-const seedTasks = (): Task[] => [
-  { id: "s1", time: "07:00", title: "Água + alongamento matinal", done: false },
-  { id: "s2", time: "08:00", title: "Café da manhã", done: false },
-  { id: "s3", time: "18:00", title: "Treino na academia", done: false },
-  { id: "s4", time: "22:00", title: "Dormir", done: false },
-];
-
-const storageKey = () => `planner:${todayKey()}`;
-
 export const DailyPlanner = () => {
-  const [tasks, setTasks] = useState<Task[]>(() => loadLS<Task[]>(storageKey(), seedTasks()));
+  const { user } = useAuth();
+  const [tasks, setTasks] = useState<PlannerTask[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<Task | null>(null);
+  const [editing, setEditing] = useState<PlannerTask | null>(null);
   const [form, setForm] = useState<{ time: string; title: string }>({ time: "09:00", title: "" });
+  const day = todayKey();
 
-  useEffect(() => saveLS(storageKey(), tasks), [tasks]);
+  useEffect(() => {
+    if (!user) return;
+    fetchPlanner(user.id, day).then(setTasks).catch((e) => toast.error(e.message));
+  }, [user, day]);
 
   const sorted = useMemo(() => [...tasks].sort((a, b) => a.time.localeCompare(b.time)), [tasks]);
   const progress = tasks.length === 0 ? 0 : Math.round((tasks.filter((t) => t.done).length / tasks.length) * 100);
@@ -41,31 +32,43 @@ export const DailyPlanner = () => {
     setForm({ time: "09:00", title: "" });
     setDialogOpen(true);
   };
-  const openEdit = (t: Task) => {
+  const openEdit = (t: PlannerTask) => {
     setEditing(t);
     setForm({ time: t.time, title: t.title });
     setDialogOpen(true);
   };
 
-  const save = () => {
-    if (!form.title.trim()) return;
+  const save = async () => {
+    if (!user || !form.title.trim()) return;
     if (editing) {
-      setTasks((prev) => prev.map((t) => (t.id === editing.id ? { ...t, ...form } : t)));
+      const updated = { ...editing, ...form, title: form.title.trim() };
+      setTasks((prev) => prev.map((t) => (t.id === editing.id ? updated : t)));
+      await upsertPlannerTask(user.id, day, updated);
       toast.success("Tarefa atualizada");
     } else {
-      setTasks((prev) => [...prev, { id: crypto.randomUUID(), time: form.time, title: form.title.trim(), done: false }]);
+      const t: PlannerTask = { id: crypto.randomUUID(), time: form.time, title: form.title.trim(), done: false };
+      setTasks((prev) => [...prev, t]);
+      await upsertPlannerTask(user.id, day, t);
       toast.success("Tarefa adicionada");
     }
     setDialogOpen(false);
   };
 
-  const toggle = (id: string) => {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  const toggle = async (id: string) => {
+    if (!user) return;
+    const target = tasks.find((t) => t.id === id);
+    if (!target) return;
+    const updated = { ...target, done: !target.done };
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    await upsertPlannerTask(user.id, day, updated);
   };
-  const remove = (id: string) => setTasks((prev) => prev.filter((t) => t.id !== id));
+  const remove = async (id: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+    await deletePlannerTask(id);
+  };
 
   const tasksByHour = useMemo(() => {
-    const map = new Map<number, Task[]>();
+    const map = new Map<number, PlannerTask[]>();
     sorted.forEach((t) => {
       const h = parseInt(t.time.split(":")[0], 10);
       if (!map.has(h)) map.set(h, []);
@@ -78,7 +81,6 @@ export const DailyPlanner = () => {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{today}</p>
@@ -89,7 +91,6 @@ export const DailyPlanner = () => {
         </Button>
       </div>
 
-      {/* Progress card */}
       <div className="rounded-3xl gradient-primary p-5 text-primary-foreground shadow-glow">
         <div className="flex items-center justify-between">
           <div>
@@ -108,7 +109,6 @@ export const DailyPlanner = () => {
         </p>
       </div>
 
-      {/* Timeline */}
       <div className="space-y-1">
         {HOURS.map((h) => {
           const items = tasksByHour.get(h) ?? [];
@@ -164,7 +164,6 @@ export const DailyPlanner = () => {
         })}
       </div>
 
-      {/* Add / Edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="rounded-3xl">
           <DialogHeader>
