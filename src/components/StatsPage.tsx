@@ -1,6 +1,8 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Flame, Trophy, Target, Calendar } from "lucide-react";
-import { loadLS, todayKey } from "@/lib/storage";
+import { todayKey } from "@/lib/storage";
+import { fetchWorkoutHistory, fetchWeekPlan, type WeekPlan } from "@/lib/cloudStorage";
+import { useAuth } from "@/hooks/useAuth";
 
 const dayKey = (d: Date) => {
   const y = d.getFullYear();
@@ -10,8 +12,17 @@ const dayKey = (d: Date) => {
 };
 
 export const StatsPage = () => {
-  const history = loadLS<Record<string, string[]>>("workoutHistory", {});
-  const weekPlan = loadLS<Record<string, string | null>>("weekPlan", {});
+  const { user } = useAuth();
+  const [history, setHistory] = useState<Record<string, string[]>>({});
+  const [weekPlan, setWeekPlan] = useState<WeekPlan>({});
+
+  useEffect(() => {
+    if (!user) return;
+    Promise.all([fetchWorkoutHistory(user.id), fetchWeekPlan(user.id)]).then(([h, p]) => {
+      setHistory(h);
+      setWeekPlan(p);
+    });
+  }, [user]);
 
   const { streak, weekDone, weekPlanned, last7 } = useMemo(() => {
     let s = 0;
