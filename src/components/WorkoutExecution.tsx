@@ -107,15 +107,14 @@ export const WorkoutExecution = () => {
   const next = () => setIdx((i) => Math.min(total - 1, i + 1));
   const prev = () => setIdx((i) => Math.max(0, i - 1));
 
-  const finish = () => {
-    // Save completion
-    const key = "workoutHistory";
-    const history = loadLS<Record<string, string[]>>(key, {});
-    const today = todayKey();
-    const arr = history[today] ?? [];
-    if (!arr.includes(workout.id)) arr.push(workout.id);
-    history[today] = arr;
-    saveLS(key, history);
+  const finish = async () => {
+    if (user) {
+      try {
+        await logWorkoutDone(user.id, todayKey(), workout.id);
+      } catch (e) {
+        console.error(e);
+      }
+    }
     toast.success(`Treino ${workout.id} concluído! 🎉`);
     navigate("/stats");
   };
