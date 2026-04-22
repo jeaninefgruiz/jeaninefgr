@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-const HOURS = Array.from({ length: 17 }, (_, i) => 6 + i); // 6..22
+const HOURS = Array.from({ length: 19 }, (_, i) => 5 + i); // 5..23
 
 export const DailyPlanner = () => {
   const { user } = useAuth();
