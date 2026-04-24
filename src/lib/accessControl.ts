@@ -1,7 +1,7 @@
 // Lista de e-mails autorizados a acessar o app.
 // Para liberar acesso a outra pessoa, adicione o e-mail (em minúsculas) abaixo.
 export const ALLOWED_EMAILS: string[] = [
-  "jeaninefgr@gmail.com",
+  "jeaninefgruiz@gmail.com",
 ];
 
 export const isEmailAllowed = (email?: string | null): boolean => {
