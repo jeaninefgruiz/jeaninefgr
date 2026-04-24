@@ -83,7 +83,7 @@ export const WORKOUTS: Workout[] = [
   {
     id: "B",
     name: "Treino B",
-    focus: "Superior + abdômen + cardio",
+    focus: "Superior + abdômen",
     emoji: "💪",
     color: "secondary",
     sections: [
