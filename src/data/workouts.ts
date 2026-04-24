@@ -1,4 +1,4 @@
-// Plano de hipertrofia para iniciantes — treinos A, B, C, D pré-carregados
+// Plano de hipertrofia para iniciantes — Natflix Fitness (Jul/24)
 export type Exercise = {
   id: string;
   name: string;
@@ -23,25 +23,31 @@ export type Workout = {
   sections: WorkoutSection[];
 };
 
-const lowerStretch: WorkoutSection = {
-  title: "Alongamento e ativação inferior",
+const lowerStretch = (idPrefix: string): WorkoutSection => ({
+  title: "Alongamento — Inferiores",
   kind: "stretch",
   exercises: [
-    { id: "ls1", name: "Alongamento de flexor do quadril", sets: "1", reps: "30s cada lado", rest: "—" },
-    { id: "ls2", name: "Ativação de glúteo (ponte)", sets: "2", reps: "15", rest: "30s" },
-    { id: "ls3", name: "Agachamento livre lento", sets: "1", reps: "15", rest: "—" },
+    { id: `${idPrefix}ls1`, name: "Mobilidade dinâmica de quadril + abertura de quadril", sets: "1 + 2", reps: "10 + 8 cada lado", rest: "—" },
+    { id: `${idPrefix}ls2`, name: "Alongamento posterior, tornozelo + adutor de coxa", sets: "1", reps: "10 movimentos, sustentar 10s na frente cada lado", rest: "—" },
+    { id: `${idPrefix}ls3`, name: "Alongamento posterior de coxa", sets: "2", reps: "40s cada perna", rest: "—" },
+    { id: `${idPrefix}ls4`, name: "Alongamento reto femural", sets: "2", reps: "30s cada lado", rest: "—" },
+    { id: `${idPrefix}ls5`, name: "Alongamento de adutores", sets: "1", reps: "30s + 40s forçando perna p/ baixo", rest: "—" },
+    { id: `${idPrefix}ls6`, name: "Mobilidade dinâmica (joelhos no chão)", sets: "1", reps: "20 totais (10 cada lado)", rest: "—" },
   ],
-};
+});
 
-const upperStretch: WorkoutSection = {
-  title: "Alongamento e ativação superior",
+const upperStretch = (idPrefix: string): WorkoutSection => ({
+  title: "Alongamento — Superiores",
   kind: "stretch",
   exercises: [
-    { id: "us1", name: "Rotação de ombros + círculos com os braços", sets: "1", reps: "30s", rest: "—" },
-    { id: "us2", name: "Gato-camelo", sets: "2", reps: "10", rest: "—" },
-    { id: "us3", name: "Abertura com elástico (band pull-apart)", sets: "2", reps: "15", rest: "30s" },
+    { id: `${idPrefix}us1`, name: "Alongamento para lombar (criança + cobra/cachorro)", sets: "2 + 1", reps: "30s + 8 movimentos", rest: "—" },
+    { id: `${idPrefix}us2`, name: "Alongamento para ombros (cruzado no peito)", sets: "1 + 2", reps: "16 totais + 20s cada lado", rest: "—" },
+    { id: `${idPrefix}us3`, name: "Alongamento para tríceps", sets: "2", reps: "30s cada braço", rest: "—" },
+    { id: `${idPrefix}us4`, name: "Alongamento de punho", sets: "1", reps: "15 movimentos frente e trás", rest: "—" },
+    { id: `${idPrefix}us5`, name: "Alongamento peitoral", sets: "1", reps: "40s + 20s cada lado", rest: "—" },
+    { id: `${idPrefix}us6`, name: "Alongamento dinâmico (prancha lateral c/ rotação)", sets: "1", reps: "16 totais (8 cada lado)", rest: "—" },
   ],
-};
+});
 
 export const WORKOUTS: Workout[] = [
   {
@@ -51,24 +57,32 @@ export const WORKOUTS: Workout[] = [
     emoji: "🦵",
     color: "primary",
     sections: [
-      lowerStretch,
+      lowerStretch("a"),
+      {
+        title: "Ativação e aquecimento",
+        kind: "warmup",
+        exercises: [
+          { id: "aw1", name: "Cócoras com peso (5s isometria) + agachamento lateral sem peso", sets: "2", reps: "10 totais + 10 cada lado", rest: "30s", notes: "Peso leve apenas para ativar a musculatura." },
+          { id: "aw2", name: "Aquecimento — Cadeira extensora", sets: "1", reps: "15 a 20", rest: "—", notes: "Peso leve apenas para aquecer." },
+        ],
+      },
       {
         title: "Treino principal",
         kind: "main",
         exercises: [
-          { id: "a1", name: "Agachamento livre com barra", sets: "4", reps: "12-15 → 10-12 → 8-10 → 6-8", rest: "90-120s", notes: "Tempo 3-1-1, descida controlada" },
-          { id: "a2", name: "Leg press", sets: "4", reps: "12-15 → 10-12 → 8-10 → 6-8", rest: "90s", notes: "Pés baixos para focar quadríceps" },
-          { id: "a3", name: "Agachamento búlgaro", sets: "3", reps: "10-12 cada perna", rest: "60s", notes: "Joelho da frente alinhado com o pé" },
-          { id: "a4", name: "Cadeira extensora", sets: "3", reps: "12-15", rest: "60s", notes: "Drop set na última série" },
-          { id: "a5", name: "Avanço caminhando", sets: "3", reps: "12 passos cada perna", rest: "60s" },
-          { id: "a6", name: "Panturrilha em pé", sets: "4", reps: "15-20", rest: "45s", notes: "Isometria de 2s no topo" },
+          { id: "a1", name: "Cadeira extensora", sets: "4", reps: "1ª: 12-15 (desc. 3s + 1s topo) · 2ª: 10-12 pesadas · 3ª: 8-10 pesadas · 4ª: 8-10 → -2 placas → 10-12 → -2 placas → 12-15", rest: "1 - 1:10 min", notes: "Aumente o peso a cada série. 4ª série em drop set duplo." },
+          { id: "a2", name: "Afundo base parada no Smith com step no pé da frente", sets: "4", reps: "1ª: 12 cada perna · 2ª: 10 · 3ª: 8 · 4ª: 6-8 → 20s descanso → máximo (cada perna)", rest: "30-40s entre pernas / 1min entre séries", notes: "Aumente o peso até a 3ª série. 4ª série com rest-pause até a falha." },
+          { id: "a3", name: "Agachamento livre ou no Smith (2 últimas séries conjugadas com goblet)", sets: "4", reps: "1ª e 2ª: 10-12 (desc. 2s + 1s embaixo) · 3ª: 8-10 + 12-15 goblet · 4ª: 8-10 + 15-20 goblet", rest: "1 - 1:10 min", notes: "Sustente 1s embaixo nas duas primeiras." },
+          { id: "a4", name: "Leg press 45 ou horizontal", sets: "4", reps: "1ª: 12-15 (desc. 3s) · 2ª: 10-12 (desc. 3s) · 3ª: 8-10 com 2s embaixo · 4ª: 8-10 com rest-pause", rest: "1 - 1:10 min", notes: "Aumente o peso a cada série. 4ª: 8-10 → 20s → máximo até a falha." },
+          { id: "a5", name: "Passada com halteres nas mãos (revezando com peso corporal)", sets: "4", reps: "1ª: 12/12 c/ peso · 2ª: 8/8 c/ peso + 10/10 sem peso · 3ª: 12/12 · 4ª: 8/8 c/ peso + 15/15 sem peso", rest: "1 - 1:10 min" },
+          { id: "a6", name: "Panturrilha no leg ou na máquina", sets: "3", reps: "1ª: 15 · 2ª: 12 · 3ª: 10 com drop set", rest: "40s", notes: "Aumente o peso a cada série. 3ª: 10 → reduz peso → máximo (falha)." },
         ],
       },
       {
-        title: "Cardio opcional",
+        title: "Cardio",
         kind: "cardio",
         exercises: [
-          { id: "ac1", name: "Caminhada inclinada", sets: "1", reps: "15 min · inclinação 8", rest: "—" },
+          { id: "ac1", name: "Cardio (planilha de cardio Natflix)", sets: "1", reps: "Conforme planilha", rest: "—" },
         ],
       },
     ],
@@ -80,26 +94,34 @@ export const WORKOUTS: Workout[] = [
     emoji: "💪",
     color: "secondary",
     sections: [
-      upperStretch,
+      upperStretch("b"),
+      {
+        title: "Mobilidade e aquecimento",
+        kind: "warmup",
+        exercises: [
+          { id: "bw1", name: "Mobilidade de ombro com anilha + crucifixo inverso peso leve (1s em cima)", sets: "2", reps: "10 + 10 cada lado", rest: "30s", notes: "Peso baixo no crucifixo, execução bem controlada." },
+          { id: "bw2", name: "Aquecimento — Elevação lateral com halteres em pé", sets: "1", reps: "15 a 20", rest: "1min", notes: "Peso baixo apenas para aquecer." },
+        ],
+      },
       {
         title: "Treino principal",
         kind: "main",
         exercises: [
-          { id: "b1", name: "Puxada alta (pulley)", sets: "4", reps: "12-15 → 10-12 → 8-10 → 6-8", rest: "75s", notes: "Apertar dorsais embaixo" },
-          { id: "b2", name: "Remada sentada na polia", sets: "4", reps: "12-15 → 10-12 → 8-10 → 6-8", rest: "75s" },
-          { id: "b3", name: "Desenvolvimento com halteres", sets: "3", reps: "10-12", rest: "75s", notes: "Pegada neutra" },
-          { id: "b4", name: "Supino com halteres", sets: "3", reps: "10-12", rest: "75s" },
-          { id: "b5", name: "Rosca direta", sets: "3", reps: "12", rest: "45s", notes: "Rest-pause na última série" },
-          { id: "b6", name: "Tríceps na corda", sets: "3", reps: "12-15", rest: "45s" },
-          { id: "b7", name: "Prancha", sets: "3", reps: "45s isometria", rest: "45s", notes: "Mantenha glúteos contraídos" },
-          { id: "b8", name: "Elevação de joelhos suspenso", sets: "3", reps: "12-15", rest: "45s" },
+          { id: "b1", name: "Elevação lateral com halteres em pé (2 últimas conjugadas c/ sentada)", sets: "4", reps: "1ª: 12-15 · 2ª: 10-12 · 3ª: 8-10 em pé + 10 sentada · 4ª: cluster 5-5-5 + 10 sentada", rest: "1:20 min", notes: "Aumente o peso até a 3ª. 4ª: 5 em pé → 20s → 5 → 20s → 5 → reduz peso → 10 sentada." },
+          { id: "b2", name: "Desenvolvimento aberto unilateral c/ halter ou na máquina", sets: "4", reps: "1ª: 15 cada braço · 2ª: 12 · 3ª: 10 · 4ª: cluster 6-6-6 cada braço", rest: "40s", notes: "4ª: 6 → 20s → 6 → 20s → 6 (mesmo braço, depois repete no outro)." },
+          { id: "b3", name: "Remada alta com halteres + Elevação frontal sentada alternada", sets: "3", reps: "1ª: 12-15 + 12 · 2ª: 10-12 + 12 · 3ª: 8-10 + cluster 5-5-5-5 frontal", rest: "1min", notes: "3ª frontal: 5 → 20s → 5 → 20s → 5 → 20s → 5." },
+          { id: "b4", name: "Puxada aberta no pulley", sets: "4", reps: "1ª: 12 (2s embaixo) · 2ª: 10 · 3ª: 8 · 4ª: 6 com drop set", rest: "1min", notes: "Sustente 2s embaixo. 4ª: 6 pesadas → reduz peso → máximo (falha)." },
+          { id: "b5", name: "Remada baixa triângulo + Pulldown com barra no cross", sets: "4", reps: "1ª: 12-15 (2s atrás) + 10-12 · 2ª: 10-12 + 10-12 · 3ª: 8-10 c/ drop set + 10-12", rest: "1min", notes: "3ª remada: 8-10 → reduz peso → máximo, depois 10-12 pulldown." },
+          { id: "b6", name: "Supino banco inclinado c/ halteres + Tríceps mergulho no banco", sets: "3", reps: "1ª: 15 + 15 · 2ª: 12 + 15 · 3ª: 10 c/ drop set + 15", rest: "1min", notes: "Sempre 15 reps no tríceps. 3ª supino: 10 → reduz peso → máximo + 15 mergulho." },
+          { id: "b7", name: "Bíceps martelo sentada com halteres", sets: "3", reps: "12 com rest-pause (todas as séries)", rest: "1min", notes: "Carga alta p/ 12 reps → 20s → máximo na falha. Isso conta como 1 série." },
+          { id: "b8", name: "Abdominal bike + supra c/ peso (perna estendida) + isometria prancha alta", sets: "3", reps: "1ª: 20 + 10 + 20s · 2ª: 18 + 8 + 30s · 3ª: 16 + 6 + 40s", rest: "1min", notes: "Reps reduzem e tempo de prancha aumenta a cada série." },
         ],
       },
       {
-        title: "Cardio finalizador",
+        title: "Cardio",
         kind: "cardio",
         exercises: [
-          { id: "bc1", name: "Bike — intervalado", sets: "1", reps: "10 min · 30s forte / 30s leve", rest: "—" },
+          { id: "bc1", name: "Cardio (planilha de cardio Natflix)", sets: "1", reps: "Conforme planilha", rest: "—" },
         ],
       },
     ],
@@ -111,24 +133,32 @@ export const WORKOUTS: Workout[] = [
     emoji: "🍑",
     color: "accent",
     sections: [
-      lowerStretch,
+      lowerStretch("c"),
+      {
+        title: "Ativação e aquecimento",
+        kind: "warmup",
+        exercises: [
+          { id: "cw1", name: "Ponte de glúteo c/ band (2s em cima) + abdução c/ band (quadril alto) + isometria em abdução", sets: "2", reps: "15 + 15 + 20s", rest: "30s", notes: "Sem band: ponte sem band e abdução no cross com peso leve." },
+          { id: "cw2", name: "Aquecimento — Elevação pélvica na máquina ou c/ barra livre", sets: "1", reps: "15 a 20", rest: "1min", notes: "Peso baixo apenas para aquecer." },
+        ],
+      },
       {
         title: "Treino principal",
         kind: "main",
         exercises: [
-          { id: "c1", name: "Elevação de quadril (hip thrust)", sets: "4", reps: "12-15 → 10-12 → 8-10 → 6-8", rest: "90s", notes: "2s de contração no topo" },
-          { id: "c2", name: "Levantamento terra romeno", sets: "4", reps: "10-12", rest: "90s", notes: "Joelho semiflexionado, dobra no quadril" },
-          { id: "c3", name: "Coice na polia (kickback)", sets: "3", reps: "12-15 cada perna", rest: "45s" },
-          { id: "c4", name: "Levantamento terra sumô", sets: "3", reps: "10", rest: "90s" },
-          { id: "c5", name: "Abdução de glúteo médio", sets: "3", reps: "15", rest: "45s", notes: "Drop set na última série" },
-          { id: "c6", name: "Hiperextensão lombar", sets: "3", reps: "12-15", rest: "60s", notes: "Contraia glúteos, não a lombar" },
+          { id: "c1", name: "Elevação pélvica na máquina ou com barra livre", sets: "4", reps: "1ª: 12-15 (2s topo) · 2ª: 10-12 (1s topo) · 3ª: 10-12 (1s topo) · 4ª: cluster 6-6-6-6", rest: "1:10 - 1:20 min", notes: "4ª: 6 pesadas → 20s → 6 → 20s → 6 → 20s → 6." },
+          { id: "c2", name: "Afundo p/ trás no Smith c/ tronco inclinado à frente", sets: "4", reps: "1ª: 12 cada perna · 2ª: 10-12 · 3ª: 8-10 · 4ª: 6-8 → 20s → máximo", rest: "30-40s entre pernas / 1min entre séries", notes: "4ª com rest-pause até a falha." },
+          { id: "c3", name: "Stiff com barra e pés abduzidos", sets: "4", reps: "1ª: 12 (desc. 3s) · 2ª-4ª: 8-10 (desc. 2s)", rest: "1min", notes: "Aumente o peso a cada série." },
+          { id: "c4", name: "Extensão de quadril (perna estendida) + Extensão de joelho e quadril (coice)", sets: "3", reps: "10-12 (1s em cima) + 8-10 (todas as séries)", rest: "1 - 1:10 min", notes: "Aumente o peso a cada série." },
+          { id: "c5", name: "Mesa ou cadeira flexora", sets: "3", reps: "1ª: 10-12 · 2ª: 8-10 · 3ª: 6-8 com drop set", rest: "1min", notes: "3ª: 6-8 → reduz 30% do peso → máximo (falha)." },
+          { id: "c6", name: "Cadeira abdutora com tronco reto", sets: "4", reps: "1ª-3ª: 12-15 (2s aberto) · 4ª: 8-10 → reduz peso → 8-10 → reduz peso → máximo", rest: "40s", notes: "4ª em drop set duplo até a falha." },
         ],
       },
       {
-        title: "Cardio opcional",
+        title: "Cardio",
         kind: "cardio",
         exercises: [
-          { id: "cc1", name: "Escada (stairmaster)", sets: "1", reps: "12 min ritmo constante", rest: "—" },
+          { id: "cc1", name: "Cardio (planilha de cardio Natflix)", sets: "1", reps: "Conforme planilha", rest: "—" },
         ],
       },
     ],
@@ -140,24 +170,31 @@ export const WORKOUTS: Workout[] = [
     emoji: "🔥",
     color: "primary",
     sections: [
-      lowerStretch,
+      lowerStretch("d"),
+      {
+        title: "Ativação e aquecimento",
+        kind: "warmup",
+        exercises: [
+          { id: "dw1", name: "Cócoras com peso (5s isometria) + agachamento lateral sem peso", sets: "2", reps: "10 totais + 10 cada lado", rest: "30s", notes: "Peso leve apenas para ativar a musculatura." },
+          { id: "dw2", name: "Aquecimento — Agachamento livre ou no Smith", sets: "1", reps: "15 a 20", rest: "—", notes: "Peso leve apenas para aquecer." },
+        ],
+      },
       {
         title: "Treino principal",
         kind: "main",
         exercises: [
-          { id: "d1", name: "Agachamento livre com barra", sets: "4", reps: "10-12", rest: "90s" },
-          { id: "d2", name: "Elevação de quadril (hip thrust)", sets: "4", reps: "10-12", rest: "90s", notes: "2s de contração no topo" },
-          { id: "d3", name: "Levantamento terra romeno", sets: "3", reps: "10", rest: "90s" },
-          { id: "d4", name: "Avanço caminhando", sets: "3", reps: "12 cada perna", rest: "60s" },
-          { id: "d5", name: "Cadeira extensora", sets: "3", reps: "12-15", rest: "45s", notes: "Rest-pause na última série" },
-          { id: "d6", name: "Panturrilha em pé", sets: "4", reps: "15-20", rest: "45s" },
+          { id: "d1", name: "Agachamento livre ou no Smith (2 últimas conjugadas c/ goblet)", sets: "4", reps: "1ª e 2ª: 10-12 (desc. 2s + 1s embaixo) · 3ª: 8-10 + 12-15 goblet · 4ª: 8-10 + 15-20 goblet", rest: "1 - 1:10 min" },
+          { id: "d2", name: "Cadeira extensora", sets: "4", reps: "1ª: 12-15 (desc. 3s + 1s topo) · 2ª: 10-12 pesadas · 3ª: 8-10 pesadas · 4ª: 8-10 → -2 placas → 10-12 → -2 placas → 12-15", rest: "1 - 1:10 min", notes: "4ª série em drop set duplo." },
+          { id: "d3", name: "Stiff com barra e pés abduzidos", sets: "4", reps: "1ª: 12 (desc. 3s) · 2ª-4ª: 8-10 (desc. 2s)", rest: "1min", notes: "Aumente o peso a cada série." },
+          { id: "d4", name: "Extensão de quadril (perna estendida) + Extensão de joelho e quadril (coice)", sets: "3", reps: "10-12 (1s em cima) + 8-10 (todas as séries)", rest: "1 - 1:10 min", notes: "Aumente o peso a cada série." },
+          { id: "d5", name: "Cadeira abdutora com tronco reto", sets: "4", reps: "1ª-3ª: 12-15 (2s aberto) · 4ª: 8-10 → reduz peso → 8-10 → reduz peso → máximo", rest: "40s", notes: "4ª em drop set duplo até a falha." },
         ],
       },
       {
-        title: "Cardio opcional",
+        title: "Cardio finalizador",
         kind: "cardio",
         exercises: [
-          { id: "dc1", name: "Caminhada inclinada", sets: "1", reps: "15 min · inclinação 10", rest: "—" },
+          { id: "dc1", name: "Cardio leve/moderado", sets: "1", reps: "20 min", rest: "—", notes: "Após o treino, intensidade leve/moderada." },
         ],
       },
     ],
