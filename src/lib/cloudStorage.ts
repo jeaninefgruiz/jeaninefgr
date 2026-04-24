@@ -106,6 +106,41 @@ export async function savePrefs(userId: string, workoutTime: WorkoutTime) {
   if (error) throw error;
 }
 
+// ---------- Running progress ----------
+export type RunKey = `${number}-${number}`; // `${week}-${day}`
+
+export async function fetchRunningProgress(userId: string): Promise<Set<RunKey>> {
+  const { data, error } = await supabase
+    .from("running_progress").select("week,day").eq("user_id", userId);
+  if (error) throw error;
+  return new Set((data ?? []).map((r) => `${r.week}-${r.day}` as RunKey));
+}
+
+export async function toggleRunSession(
+  userId: string,
+  week: number,
+  day: number,
+  completed: boolean
+) {
+  if (completed) {
+    const { error } = await supabase
+      .from("running_progress")
+      .upsert(
+        { user_id: userId, week, day, completed_at: new Date().toISOString().slice(0, 10) },
+        { onConflict: "user_id,week,day" }
+      );
+    if (error) throw error;
+  } else {
+    const { error } = await supabase
+      .from("running_progress")
+      .delete()
+      .eq("user_id", userId)
+      .eq("week", week)
+      .eq("day", day);
+    if (error) throw error;
+  }
+}
+
 // ---------- One-time migration from localStorage ----------
 export async function migrateLocalToCloud(userId: string) {
   if (loadLS<boolean>(MIGRATION_FLAG(userId), false)) return;
