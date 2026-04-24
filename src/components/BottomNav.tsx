@@ -1,10 +1,11 @@
 import { NavLink } from "react-router-dom";
-import { Calendar, Dumbbell, BarChart3, Droplet } from "lucide-react";
+import { Calendar, Dumbbell, BarChart3, Droplet, Footprints } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/", label: "Hoje", icon: Calendar },
   { to: "/workouts", label: "Treinos", icon: Dumbbell },
+  { to: "/running", label: "Corrida", icon: Footprints },
   { to: "/habits", label: "Hábitos", icon: Droplet },
   { to: "/stats", label: "Progresso", icon: BarChart3 },
 ];

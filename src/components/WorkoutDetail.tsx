@@ -8,14 +8,12 @@ const sectionColor: Record<string, string> = {
   stretch: "bg-secondary-soft text-secondary",
   warmup: "bg-secondary-soft text-secondary",
   main: "bg-primary-soft text-primary",
-  cardio: "bg-accent-soft text-accent",
 };
 
 const sectionLabel: Record<string, string> = {
   stretch: "Alongamento",
   warmup: "Aquecimento",
   main: "Principal",
-  cardio: "Cardio",
 };
 
 export const WorkoutDetail = () => {
