@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { loadLS, saveLS, todayKey } from "./storage";
 
 export type PlannerTask = { id: string; time: string; title: string; done: boolean };
-export type Habits = { water: number; steps: number; sleep: number };
+export type Habits = { water: number; skincare: boolean; sleep: number };
 export type WeekPlan = Record<string, string | null>;
 export type WorkoutTime = "06:00" | "18:00";
 
@@ -39,12 +39,14 @@ export async function fetchHabits(userId: string, day = todayKey()): Promise<Hab
     .from("habits_daily").select("water,steps,sleep")
     .eq("user_id", userId).eq("day", day).maybeSingle();
   if (error) throw error;
-  return data ? { water: data.water, steps: data.steps, sleep: Number(data.sleep) } : { water: 0, steps: 0, sleep: 0 };
+  return data
+    ? { water: data.water, skincare: (data.steps ?? 0) > 0, sleep: Number(data.sleep) }
+    : { water: 0, skincare: false, sleep: 0 };
 }
 
 export async function saveHabits(userId: string, day: string, h: Habits) {
   const { error } = await supabase.from("habits_daily").upsert(
-    { user_id: userId, day, water: h.water, steps: h.steps, sleep: h.sleep, updated_at: new Date().toISOString() },
+    { user_id: userId, day, water: h.water, steps: h.skincare ? 1 : 0, sleep: h.sleep, updated_at: new Date().toISOString() },
     { onConflict: "user_id,day" }
   );
   if (error) throw error;
@@ -127,8 +129,14 @@ export async function migrateLocalToCloud(userId: string) {
       const k = localStorage.key(i);
       if (!k || !k.startsWith("habits:")) continue;
       const day = k.slice("habits:".length);
-      const h = loadLS<Habits>(k, { water: 0, steps: 0, sleep: 0 });
-      habitRows.push({ user_id: userId, day, water: h.water, steps: h.steps, sleep: h.sleep });
+      const h = loadLS<{ water: number; steps?: number; skincare?: boolean; sleep: number }>(k, { water: 0, sleep: 0 });
+      habitRows.push({
+        user_id: userId,
+        day,
+        water: h.water,
+        steps: h.skincare ? 1 : (typeof h.steps === "number" ? (h.steps > 0 ? 1 : 0) : 0),
+        sleep: h.sleep,
+      });
     }
     if (habitRows.length) await supabase.from("habits_daily").upsert(habitRows, { onConflict: "user_id,day" });
 
