@@ -10,7 +10,7 @@ export type Exercise = {
 
 export type WorkoutSection = {
   title: string;
-  kind: "stretch" | "warmup" | "main" | "cardio";
+  kind: "stretch" | "warmup" | "main";
   exercises: Exercise[];
 };
 
@@ -78,13 +78,6 @@ export const WORKOUTS: Workout[] = [
           { id: "a6", name: "Panturrilha no leg ou na máquina", sets: "3", reps: "1ª: 15 · 2ª: 12 · 3ª: 10 com drop set", rest: "40s", notes: "Aumente o peso a cada série. 3ª: 10 → reduz peso → máximo (falha)." },
         ],
       },
-      {
-        title: "Cardio",
-        kind: "cardio",
-        exercises: [
-          { id: "ac1", name: "Cardio (planilha de cardio Natflix)", sets: "1", reps: "Conforme planilha", rest: "—" },
-        ],
-      },
     ],
   },
   {
@@ -117,13 +110,6 @@ export const WORKOUTS: Workout[] = [
           { id: "b8", name: "Abdominal bike + supra c/ peso (perna estendida) + isometria prancha alta", sets: "3", reps: "1ª: 20 + 10 + 20s · 2ª: 18 + 8 + 30s · 3ª: 16 + 6 + 40s", rest: "1min", notes: "Reps reduzem e tempo de prancha aumenta a cada série." },
         ],
       },
-      {
-        title: "Cardio",
-        kind: "cardio",
-        exercises: [
-          { id: "bc1", name: "Cardio (planilha de cardio Natflix)", sets: "1", reps: "Conforme planilha", rest: "—" },
-        ],
-      },
     ],
   },
   {
@@ -154,13 +140,6 @@ export const WORKOUTS: Workout[] = [
           { id: "c6", name: "Cadeira abdutora com tronco reto", sets: "4", reps: "1ª-3ª: 12-15 (2s aberto) · 4ª: 8-10 → reduz peso → 8-10 → reduz peso → máximo", rest: "40s", notes: "4ª em drop set duplo até a falha." },
         ],
       },
-      {
-        title: "Cardio",
-        kind: "cardio",
-        exercises: [
-          { id: "cc1", name: "Cardio (planilha de cardio Natflix)", sets: "1", reps: "Conforme planilha", rest: "—" },
-        ],
-      },
     ],
   },
   {
@@ -188,13 +167,6 @@ export const WORKOUTS: Workout[] = [
           { id: "d3", name: "Stiff com barra e pés abduzidos", sets: "4", reps: "1ª: 12 (desc. 3s) · 2ª-4ª: 8-10 (desc. 2s)", rest: "1min", notes: "Aumente o peso a cada série." },
           { id: "d4", name: "Extensão de quadril (perna estendida) + Extensão de joelho e quadril (coice)", sets: "3", reps: "10-12 (1s em cima) + 8-10 (todas as séries)", rest: "1 - 1:10 min", notes: "Aumente o peso a cada série." },
           { id: "d5", name: "Cadeira abdutora com tronco reto", sets: "4", reps: "1ª-3ª: 12-15 (2s aberto) · 4ª: 8-10 → reduz peso → 8-10 → reduz peso → máximo", rest: "40s", notes: "4ª em drop set duplo até a falha." },
-        ],
-      },
-      {
-        title: "Cardio finalizador",
-        kind: "cardio",
-        exercises: [
-          { id: "dc1", name: "Cardio leve/moderado", sets: "1", reps: "20 min", rest: "—", notes: "Após o treino, intensidade leve/moderada." },
         ],
       },
     ],
