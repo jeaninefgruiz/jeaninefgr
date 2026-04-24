@@ -4,6 +4,8 @@ import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { isEmailAllowed } from "@/lib/accessControl";
+import { supabase } from "@/integrations/supabase/client";
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
@@ -18,7 +20,14 @@ export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user) navigate("/", { replace: true });
+    if (!loading && user) {
+      if (isEmailAllowed(user.email)) {
+        navigate("/", { replace: true });
+      } else {
+        toast.error("Acesso negado: este e-mail não está autorizado.");
+        supabase.auth.signOut();
+      }
+    }
   }, [user, loading, navigate]);
 
   const handleGoogle = async () => {
