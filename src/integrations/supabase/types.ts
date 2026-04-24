@@ -77,6 +77,33 @@ export type Database = {
         }
         Relationships: []
       }
+      running_progress: {
+        Row: {
+          completed_at: string
+          created_at: string
+          day: number
+          id: string
+          user_id: string
+          week: number
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          day: number
+          id?: string
+          user_id: string
+          week: number
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          day?: number
+          id?: string
+          user_id?: string
+          week?: number
+        }
+        Relationships: []
+      }
       user_prefs: {
         Row: {
           updated_at: string
