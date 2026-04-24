@@ -139,14 +139,14 @@ export const WORKOUTS: Workout[] = [
         kind: "warmup",
         exercises: [
           { id: "cw1", name: "Ponte de glúteo c/ band (2s em cima) + abdução c/ band (quadril alto) + isometria em abdução", sets: "2", reps: "15 + 15 + 20s", rest: "30s", notes: "Sem band: ponte sem band e abdução no cross com peso leve." },
-          { id: "cw2", name: "Aquecimento — Elevação pélvica na máquina ou c/ barra livre", sets: "1", reps: "15 a 20", rest: "1min", notes: "Peso baixo apenas para aquecer." },
+          { id: "cw2", name: "Aquecimento — Coice na polia (cable kickback)", sets: "1", reps: "15 a 20 cada perna", rest: "1min", notes: "Peso baixo apenas para aquecer e ativar o glúteo." },
         ],
       },
       {
         title: "Treino principal",
         kind: "main",
         exercises: [
-          { id: "c1", name: "Elevação pélvica na máquina ou com barra livre", sets: "4", reps: "1ª: 12-15 (2s topo) · 2ª: 10-12 (1s topo) · 3ª: 10-12 (1s topo) · 4ª: cluster 6-6-6-6", rest: "1:10 - 1:20 min", notes: "4ª: 6 pesadas → 20s → 6 → 20s → 6 → 20s → 6." },
+          { id: "c1", name: "Coice na polia (cable kickback)", sets: "4", reps: "1ª: 12-15 cada perna (1s em cima) · 2ª: 10-12 (1s em cima) · 3ª: 10-12 (1s em cima) · 4ª: cluster 6-6-6-6 cada perna", rest: "1:10 - 1:20 min", notes: "Substituto seguro p/ endometriose. Aumente o peso a cada série. 4ª: 6 pesadas → 20s → 6 → 20s → 6 → 20s → 6 (cada perna)." },
           { id: "c2", name: "Afundo p/ trás no Smith c/ tronco inclinado à frente", sets: "4", reps: "1ª: 12 cada perna · 2ª: 10-12 · 3ª: 8-10 · 4ª: 6-8 → 20s → máximo", rest: "30-40s entre pernas / 1min entre séries", notes: "4ª com rest-pause até a falha." },
           { id: "c3", name: "Stiff com barra e pés abduzidos", sets: "4", reps: "1ª: 12 (desc. 3s) · 2ª-4ª: 8-10 (desc. 2s)", rest: "1min", notes: "Aumente o peso a cada série." },
           { id: "c4", name: "Extensão de quadril (perna estendida) + Extensão de joelho e quadril (coice)", sets: "3", reps: "10-12 (1s em cima) + 8-10 (todas as séries)", rest: "1 - 1:10 min", notes: "Aumente o peso a cada série." },
