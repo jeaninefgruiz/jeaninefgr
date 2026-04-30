@@ -7,54 +7,54 @@
 /* My Routine & Gym Planner — soft, modern, motivating */
 @layer base {
   :root {
-    --background: 340 40% 99%;
-    --foreground: 320 25% 16%;
+    --background: 30 20% 98%;
+    --foreground: 20 15% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 320 25% 16%;
+    --card-foreground: 20 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 320 25% 16%;
+    --popover-foreground: 20 15% 15%;
 
-    /* Primary: soft rose-mauve — feminine + modern */
-    --primary: 340 65% 62%;
-    --primary-foreground: 0 0% 100%;
-    --primary-soft: 340 80% 96%;
-    --primary-glow: 320 70% 72%;
+    /* Primary: deep mauve / bordeaux — sober & elegant */
+    --primary: 345 28% 38%;
+    --primary-foreground: 30 25% 98%;
+    --primary-soft: 345 25% 94%;
+    --primary-glow: 345 22% 52%;
 
-    /* Secondary: soft sage green — calm success */
-    --secondary: 155 35% 55%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-soft: 155 45% 94%;
+    /* Secondary: muted sage — quiet success */
+    --secondary: 150 18% 42%;
+    --secondary-foreground: 30 25% 98%;
+    --secondary-soft: 150 20% 93%;
 
-    /* Accent: warm peach — streaks/cardio */
-    --accent: 22 90% 70%;
-    --accent-foreground: 0 0% 100%;
-    --accent-soft: 22 95% 95%;
+    /* Accent: warm taupe / champagne — refined highlight */
+    --accent: 28 35% 55%;
+    --accent-foreground: 30 25% 98%;
+    --accent-soft: 28 40% 94%;
 
-    --muted: 330 25% 95%;
-    --muted-foreground: 320 10% 48%;
+    --muted: 30 15% 94%;
+    --muted-foreground: 25 8% 42%;
 
-    --destructive: 0 75% 62%;
+    --destructive: 0 55% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 330 25% 92%;
-    --input: 330 25% 92%;
-    --ring: 340 65% 62%;
+    --border: 30 15% 90%;
+    --input: 30 15% 90%;
+    --ring: 345 28% 38%;
 
     --radius: 1.25rem;
 
-    /* Gradients — softer, dreamier */
-    --gradient-primary: linear-gradient(135deg, hsl(340 75% 70%), hsl(320 70% 72%));
-    --gradient-success: linear-gradient(135deg, hsl(155 40% 60%), hsl(170 40% 62%));
-    --gradient-warm: linear-gradient(135deg, hsl(22 90% 72%), hsl(8 85% 72%));
-    --gradient-hero: linear-gradient(160deg, hsl(340 80% 97%) 0%, hsl(340 40% 99%) 50%, hsl(155 45% 96%) 100%);
+    /* Gradients — refined, understated */
+    --gradient-primary: linear-gradient(135deg, hsl(345 28% 42%), hsl(345 22% 55%));
+    --gradient-success: linear-gradient(135deg, hsl(150 18% 45%), hsl(160 16% 50%));
+    --gradient-warm: linear-gradient(135deg, hsl(28 35% 58%), hsl(20 30% 55%));
+    --gradient-hero: linear-gradient(160deg, hsl(30 25% 97%) 0%, hsl(30 20% 98%) 50%, hsl(28 25% 96%) 100%);
 
-    /* Shadows — softer, blush-tinted */
-    --shadow-soft: 0 2px 12px -2px hsl(340 40% 40% / 0.06);
-    --shadow-card: 0 4px 20px -6px hsl(340 40% 40% / 0.08);
-    --shadow-glow: 0 8px 28px -8px hsl(340 65% 62% / 0.35);
-    --shadow-success: 0 8px 24px -8px hsl(155 35% 55% / 0.35);
+    /* Shadows — neutral, elegant */
+    --shadow-soft: 0 2px 12px -2px hsl(20 20% 20% / 0.06);
+    --shadow-card: 0 4px 20px -6px hsl(20 20% 20% / 0.08);
+    --shadow-glow: 0 8px 28px -8px hsl(345 28% 38% / 0.25);
+    --shadow-success: 0 8px 24px -8px hsl(150 18% 42% / 0.25);
 
     /* Transitions */
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -71,29 +71,29 @@
   }
 
   .dark {
-    --background: 330 20% 9%;
-    --foreground: 330 15% 95%;
-    --card: 330 18% 12%;
-    --card-foreground: 330 15% 95%;
-    --popover: 330 18% 12%;
-    --popover-foreground: 330 15% 95%;
-    --primary: 340 70% 68%;
-    --primary-foreground: 0 0% 100%;
-    --primary-soft: 340 30% 20%;
-    --primary-glow: 320 70% 75%;
-    --secondary: 155 40% 55%;
-    --secondary-foreground: 330 20% 9%;
-    --secondary-soft: 155 30% 16%;
-    --accent: 22 85% 70%;
-    --accent-foreground: 330 20% 9%;
-    --accent-soft: 22 30% 20%;
-    --muted: 330 15% 17%;
-    --muted-foreground: 330 10% 65%;
-    --destructive: 0 70% 60%;
+    --background: 20 10% 10%;
+    --foreground: 30 15% 92%;
+    --card: 20 10% 13%;
+    --card-foreground: 30 15% 92%;
+    --popover: 20 10% 13%;
+    --popover-foreground: 30 15% 92%;
+    --primary: 345 30% 60%;
+    --primary-foreground: 20 10% 10%;
+    --primary-soft: 345 20% 22%;
+    --primary-glow: 345 25% 68%;
+    --secondary: 150 18% 50%;
+    --secondary-foreground: 20 10% 10%;
+    --secondary-soft: 150 15% 18%;
+    --accent: 28 30% 60%;
+    --accent-foreground: 20 10% 10%;
+    --accent-soft: 28 20% 20%;
+    --muted: 20 8% 18%;
+    --muted-foreground: 30 10% 65%;
+    --destructive: 0 55% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 330 15% 20%;
-    --input: 330 15% 20%;
-    --ring: 340 70% 68%;
+    --border: 20 8% 22%;
+    --input: 20 8% 22%;
+    --ring: 345 30% 60%;
   }
 }
 
