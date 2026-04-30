@@ -186,7 +186,7 @@ export const WorkoutsPage = () => {
               colorMap[w.color]
             )}
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/25 text-3xl backdrop-blur">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-foreground/20 text-3xl backdrop-blur">
               {w.emoji}
             </div>
             <div className="flex-1">

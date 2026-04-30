@@ -210,10 +210,10 @@ export const WorkoutExecution = () => {
               <p className="text-4xl font-bold tabular-nums">{fmt(restLeft)}</p>
             </div>
             <div className="flex gap-2">
-              <Button size="icon" variant="secondary" className="h-11 w-11 rounded-2xl bg-white/25 text-accent-foreground hover:bg-white/35" onClick={() => setRestRunning((r) => !r)}>
+              <Button size="icon" variant="secondary" className="h-11 w-11 rounded-2xl bg-accent-foreground/20 text-accent-foreground hover:bg-accent-foreground/30" onClick={() => setRestRunning((r) => !r)}>
                 {restRunning ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
               </Button>
-              <Button size="icon" variant="secondary" className="h-11 w-11 rounded-2xl bg-white/25 text-accent-foreground hover:bg-white/35" onClick={() => { setRestLeft(0); setRestRunning(false); }}>
+              <Button size="icon" variant="secondary" className="h-11 w-11 rounded-2xl bg-accent-foreground/20 text-accent-foreground hover:bg-accent-foreground/30" onClick={() => { setRestLeft(0); setRestRunning(false); }}>
                 <RotateCcw className="h-5 w-5" />
               </Button>
             </div>

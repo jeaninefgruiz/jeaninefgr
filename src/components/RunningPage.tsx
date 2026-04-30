@@ -73,13 +73,13 @@ export const RunningPage = () => {
               {done.size} de {totalSessions} sessões concluídas
             </p>
           </div>
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/25 backdrop-blur">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-foreground/20 backdrop-blur">
             <Footprints className="h-7 w-7" />
           </div>
         </div>
-        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white/25">
+        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-accent-foreground/20">
           <div
-            className="h-full rounded-full bg-white transition-all duration-500"
+            className="h-full rounded-full bg-accent-foreground transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

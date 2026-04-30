@@ -97,12 +97,12 @@ export const DailyPlanner = () => {
             <p className="text-sm opacity-90">Progresso do dia</p>
             <p className="text-4xl font-bold">{progress}%</p>
           </div>
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-foreground/20 backdrop-blur">
             <Sparkles className="h-7 w-7" />
           </div>
         </div>
-        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white/20">
-          <div className="h-full rounded-full bg-white transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-primary-foreground/20">
+          <div className="h-full rounded-full bg-primary-foreground transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
         <p className="mt-2 text-xs opacity-90">
           {tasks.filter((t) => t.done).length} de {tasks.length} tarefas concluídas
