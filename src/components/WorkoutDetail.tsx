@@ -43,7 +43,7 @@ export const WorkoutDetail = () => {
         <h1 className="mt-2 font-display text-2xl font-bold">{workout.name}</h1>
         <p className="opacity-90">{workout.focus}</p>
         <Link to={`/workouts/${workout.id}/start`}>
-          <Button className="mt-4 w-full rounded-2xl bg-white text-primary hover:bg-white/90 h-12 text-base font-semibold">
+          <Button variant="secondary" className="mt-4 w-full rounded-2xl h-12 text-base font-semibold bg-background text-foreground hover:bg-background/90">
             <Play className="mr-2 h-5 w-5 fill-current" /> Iniciar treino
           </Button>
         </Link>

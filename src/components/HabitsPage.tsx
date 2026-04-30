@@ -43,7 +43,7 @@ export const HabitsPage = () => {
       <div className="rounded-3xl bg-card p-5 shadow-card">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${colorClass} text-white`}>
+            <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${colorClass} text-primary-foreground`}>
               <Icon className="h-5 w-5" />
             </div>
             <div>
@@ -86,7 +86,7 @@ export const HabitsPage = () => {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl gradient-success text-white">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl gradient-success text-secondary-foreground">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
