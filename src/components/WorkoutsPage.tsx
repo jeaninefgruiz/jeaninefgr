@@ -1,12 +1,26 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Calendar, Sun, Moon } from "lucide-react";
+import { ChevronRight, Calendar, Sun, Moon, CalendarIcon, Check } from "lucide-react";
 import { WORKOUTS, Workout } from "@/data/workouts";
 import { cn } from "@/lib/utils";
-import { fetchWeekPlan, saveWeekPlan, fetchPrefs, savePrefs as savePrefsCloud, type WeekPlan, type WorkoutTime } from "@/lib/cloudStorage";
+import {
+  fetchWeekPlan,
+  saveWeekPlan,
+  fetchPrefs,
+  savePrefs as savePrefsCloud,
+  fetchWorkoutHistoryForDay,
+  logWorkoutDone,
+  unlogWorkoutDone,
+  type WeekPlan,
+  type WorkoutTime,
+} from "@/lib/cloudStorage";
 import { syncGymTaskToToday } from "@/lib/prefs";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComp } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -30,6 +44,40 @@ export const WorkoutsPage = () => {
   const [plan, setPlan] = useState<WeekPlan>(defaultPlan);
   const [workoutTime, setWorkoutTime] = useState<WorkoutTime>("18:00");
   const [loaded, setLoaded] = useState(false);
+  const [logDate, setLogDate] = useState<Date>(new Date());
+  const [dayDone, setDayDone] = useState<Set<string>>(new Set());
+  const [logLoading, setLogLoading] = useState(false);
+
+  const dayKey = useMemo(() => format(logDate, "yyyy-MM-dd"), [logDate]);
+
+  useEffect(() => {
+    if (!user) return;
+    setLogLoading(true);
+    fetchWorkoutHistoryForDay(user.id, dayKey)
+      .then((ids) => setDayDone(new Set(ids)))
+      .catch(() => setDayDone(new Set()))
+      .finally(() => setLogLoading(false));
+  }, [user, dayKey]);
+
+  const toggleDayWorkout = async (wid: string) => {
+    if (!user) return;
+    const has = dayDone.has(wid);
+    const next = new Set(dayDone);
+    if (has) next.delete(wid); else next.add(wid);
+    setDayDone(next);
+    try {
+      if (has) {
+        await unlogWorkoutDone(user.id, dayKey, wid);
+        toast.success("Treino desmarcado");
+      } else {
+        await logWorkoutDone(user.id, dayKey, wid);
+        toast.success(`Treino ${wid} marcado em ${format(logDate, "dd/MM")}`);
+      }
+    } catch {
+      setDayDone(dayDone);
+      toast.error("Não foi possível salvar");
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -135,6 +183,64 @@ export const WorkoutsPage = () => {
             );
           })}
         </div>
+      </section>
+
+      <section className="rounded-3xl bg-card p-4 shadow-card">
+        <div className="mb-3 flex items-center gap-2">
+          <CalendarIcon className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold">Marcar treino em outra data</h2>
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-full justify-start rounded-2xl font-normal">
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {format(logDate, "EEEE, dd 'de' MMMM", { locale: ptBR })}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <CalendarComp
+              mode="single"
+              selected={logDate}
+              onSelect={(d) => d && setLogDate(d)}
+              disabled={(d) => d > new Date()}
+              initialFocus
+              locale={ptBR}
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+        <div className="mt-3 grid grid-cols-4 gap-2">
+          {WORKOUTS.map((w) => {
+            const checked = dayDone.has(w.id);
+            return (
+              <button
+                key={w.id}
+                type="button"
+                disabled={logLoading}
+                onClick={() => toggleDayWorkout(w.id)}
+                className={cn(
+                  "flex flex-col items-center gap-1 rounded-2xl border-2 p-2 transition-all active:scale-95",
+                  checked
+                    ? "border-primary bg-primary-soft shadow-glow"
+                    : "border-border bg-background hover:border-primary/40"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold",
+                    checked ? "gradient-success text-secondary-foreground" : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {checked ? <Check className="h-4 w-4" strokeWidth={3} /> : w.id}
+                </div>
+                <span className="text-[10px] font-semibold">{w.id}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-center text-[11px] text-muted-foreground">
+          Toque para marcar/desmarcar treinos no dia selecionado.
+        </p>
       </section>
 
       <section className="rounded-3xl bg-card p-4 shadow-card">
