@@ -74,6 +74,26 @@ export async function logWorkoutDone(userId: string, day: string, workoutId: str
   if (error) throw error;
 }
 
+export async function unlogWorkoutDone(userId: string, day: string, workoutId: string) {
+  const { error } = await supabase
+    .from("workout_history")
+    .delete()
+    .eq("user_id", userId)
+    .eq("day", day)
+    .eq("workout_id", workoutId);
+  if (error) throw error;
+}
+
+export async function fetchWorkoutHistoryForDay(userId: string, day: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("workout_history")
+    .select("workout_id")
+    .eq("user_id", userId)
+    .eq("day", day);
+  if (error) throw error;
+  return (data ?? []).map((r) => r.workout_id as string);
+}
+
 // ---------- Week plan ----------
 export async function fetchWeekPlan(userId: string): Promise<WeekPlan> {
   const { data, error } = await supabase
