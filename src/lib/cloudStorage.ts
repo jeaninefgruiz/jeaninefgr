@@ -81,15 +81,21 @@ export async function deleteRoutine(id: string) {
 }
 
 // Materialize routines into today's planner if not already added.
-// Uses a deterministic id "routine-{routineId}-{day}" to prevent duplicates.
+// Dedupe via source_routine_id unique index (user_id, day, source_routine_id).
 export async function materializeRoutinesForDay(userId: string, day: string) {
   const routines = await fetchRoutines(userId);
   if (!routines.length) return;
-  const existing = await fetchPlanner(userId, day);
-  const existingIds = new Set(existing.map((t) => t.id));
+  const { data: existing, error: exErr } = await supabase
+    .from("planner_tasks")
+    .select("source_routine_id")
+    .eq("user_id", userId)
+    .eq("day", day)
+    .not("source_routine_id", "is", null);
+  if (exErr) throw exErr;
+  const seen = new Set((existing ?? []).map((r) => r.source_routine_id as string));
   const rows = routines
+    .filter((r) => !seen.has(r.id))
     .map((r) => ({
-      id: `routine-${r.id}-${day}`,
       user_id: userId,
       day,
       time: r.time,
@@ -97,11 +103,11 @@ export async function materializeRoutinesForDay(userId: string, day: string) {
       done: false,
       duration: r.duration ?? null,
       energy: r.energy ?? null,
-    }))
-    .filter((row) => !existingIds.has(row.id));
+      source_routine_id: r.id,
+    }));
   if (!rows.length) return;
-  const { error } = await supabase.from("planner_tasks").upsert(rows, { onConflict: "id" });
-  if (error) throw error;
+  const { error } = await supabase.from("planner_tasks").insert(rows);
+  if (error && error.code !== "23505") throw error;
 }
 
 // ---------- Habits ----------
