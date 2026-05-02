@@ -49,6 +49,8 @@ export type Database = {
           created_at: string
           day: string
           done: boolean
+          duration: string | null
+          energy: string | null
           id: string
           time: string
           title: string
@@ -59,6 +61,8 @@ export type Database = {
           created_at?: string
           day: string
           done?: boolean
+          duration?: string | null
+          energy?: string | null
           id?: string
           time: string
           title: string
@@ -69,7 +73,48 @@ export type Database = {
           created_at?: string
           day?: string
           done?: boolean
+          duration?: string | null
+          energy?: string | null
           id?: string
+          time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      routine_tasks: {
+        Row: {
+          created_at: string
+          duration: string | null
+          energy: string | null
+          id: string
+          period: string
+          position: number
+          time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration?: string | null
+          energy?: string | null
+          id?: string
+          period?: string
+          position?: number
+          time?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration?: string | null
+          energy?: string | null
+          id?: string
+          period?: string
+          position?: number
           time?: string
           title?: string
           updated_at?: string
