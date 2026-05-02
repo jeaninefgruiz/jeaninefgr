@@ -2,7 +2,27 @@
 import { supabase } from "@/integrations/supabase/client";
 import { loadLS, saveLS, todayKey } from "./storage";
 
-export type PlannerTask = { id: string; time: string; title: string; done: boolean };
+export type TaskDuration = "quick" | "medium" | "long";
+export type TaskEnergy = "light" | "medium" | "heavy";
+export type PlannerTask = {
+  id: string;
+  time: string;
+  title: string;
+  done: boolean;
+  duration?: TaskDuration | null;
+  energy?: TaskEnergy | null;
+};
+
+export type RoutinePeriod = "morning" | "afternoon" | "evening";
+export type RoutineTask = {
+  id: string;
+  period: RoutinePeriod;
+  time: string;
+  title: string;
+  duration?: TaskDuration | null;
+  energy?: TaskEnergy | null;
+  position: number;
+};
 export type Habits = { water: number; skincare: boolean; sleep: number };
 export type WeekPlan = Record<string, string | null>;
 export type WorkoutTime = "06:00" | "18:00";
@@ -13,7 +33,7 @@ const MIGRATION_FLAG = (uid: string) => `cloudMigrated:${uid}`;
 export async function fetchPlanner(userId: string, day = todayKey()): Promise<PlannerTask[]> {
   const { data, error } = await supabase
     .from("planner_tasks")
-    .select("id,time,title,done")
+    .select("id,time,title,done,duration,energy")
     .eq("user_id", userId)
     .eq("day", day)
     .order("time");
@@ -23,7 +43,9 @@ export async function fetchPlanner(userId: string, day = todayKey()): Promise<Pl
 
 export async function upsertPlannerTask(userId: string, day: string, t: PlannerTask) {
   const { error } = await supabase.from("planner_tasks").upsert({
-    id: t.id, user_id: userId, day, time: t.time, title: t.title, done: t.done, updated_at: new Date().toISOString(),
+    id: t.id, user_id: userId, day, time: t.time, title: t.title, done: t.done,
+    duration: t.duration ?? null, energy: t.energy ?? null,
+    updated_at: new Date().toISOString(),
   });
   if (error) throw error;
 }
