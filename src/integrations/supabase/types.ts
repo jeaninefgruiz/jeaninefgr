@@ -52,6 +52,7 @@ export type Database = {
           duration: string | null
           energy: string | null
           id: string
+          source_routine_id: string | null
           time: string
           title: string
           updated_at: string
@@ -64,6 +65,7 @@ export type Database = {
           duration?: string | null
           energy?: string | null
           id?: string
+          source_routine_id?: string | null
           time: string
           title: string
           updated_at?: string
@@ -76,6 +78,7 @@ export type Database = {
           duration?: string | null
           energy?: string | null
           id?: string
+          source_routine_id?: string | null
           time?: string
           title?: string
           updated_at?: string
