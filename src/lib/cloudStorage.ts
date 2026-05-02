@@ -2,7 +2,27 @@
 import { supabase } from "@/integrations/supabase/client";
 import { loadLS, saveLS, todayKey } from "./storage";
 
-export type PlannerTask = { id: string; time: string; title: string; done: boolean };
+export type TaskDuration = "quick" | "medium" | "long";
+export type TaskEnergy = "light" | "medium" | "heavy";
+export type PlannerTask = {
+  id: string;
+  time: string;
+  title: string;
+  done: boolean;
+  duration?: TaskDuration | null;
+  energy?: TaskEnergy | null;
+};
+
+export type RoutinePeriod = "morning" | "afternoon" | "evening";
+export type RoutineTask = {
+  id: string;
+  period: RoutinePeriod;
+  time: string;
+  title: string;
+  duration?: TaskDuration | null;
+  energy?: TaskEnergy | null;
+  position: number;
+};
 export type Habits = { water: number; skincare: boolean; sleep: number };
 export type WeekPlan = Record<string, string | null>;
 export type WorkoutTime = "06:00" | "18:00";
@@ -13,7 +33,7 @@ const MIGRATION_FLAG = (uid: string) => `cloudMigrated:${uid}`;
 export async function fetchPlanner(userId: string, day = todayKey()): Promise<PlannerTask[]> {
   const { data, error } = await supabase
     .from("planner_tasks")
-    .select("id,time,title,done")
+    .select("id,time,title,done,duration,energy")
     .eq("user_id", userId)
     .eq("day", day)
     .order("time");
@@ -23,7 +43,9 @@ export async function fetchPlanner(userId: string, day = todayKey()): Promise<Pl
 
 export async function upsertPlannerTask(userId: string, day: string, t: PlannerTask) {
   const { error } = await supabase.from("planner_tasks").upsert({
-    id: t.id, user_id: userId, day, time: t.time, title: t.title, done: t.done, updated_at: new Date().toISOString(),
+    id: t.id, user_id: userId, day, time: t.time, title: t.title, done: t.done,
+    duration: t.duration ?? null, energy: t.energy ?? null,
+    updated_at: new Date().toISOString(),
   });
   if (error) throw error;
 }
@@ -31,6 +53,61 @@ export async function upsertPlannerTask(userId: string, day: string, t: PlannerT
 export async function deletePlannerTask(id: string) {
   const { error } = await supabase.from("planner_tasks").delete().eq("id", id);
   if (error) throw error;
+}
+
+// ---------- Routines (recurring) ----------
+export async function fetchRoutines(userId: string): Promise<RoutineTask[]> {
+  const { data, error } = await supabase
+    .from("routine_tasks")
+    .select("id,period,time,title,duration,energy,position")
+    .eq("user_id", userId)
+    .order("position");
+  if (error) throw error;
+  return (data ?? []) as RoutineTask[];
+}
+
+export async function upsertRoutine(userId: string, r: RoutineTask) {
+  const { error } = await supabase.from("routine_tasks").upsert({
+    id: r.id, user_id: userId, period: r.period, time: r.time, title: r.title,
+    duration: r.duration ?? null, energy: r.energy ?? null, position: r.position,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw error;
+}
+
+export async function deleteRoutine(id: string) {
+  const { error } = await supabase.from("routine_tasks").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// Materialize routines into today's planner if not already added.
+// Dedupe via source_routine_id unique index (user_id, day, source_routine_id).
+export async function materializeRoutinesForDay(userId: string, day: string) {
+  const routines = await fetchRoutines(userId);
+  if (!routines.length) return;
+  const { data: existing, error: exErr } = await supabase
+    .from("planner_tasks")
+    .select("source_routine_id")
+    .eq("user_id", userId)
+    .eq("day", day)
+    .not("source_routine_id", "is", null);
+  if (exErr) throw exErr;
+  const seen = new Set((existing ?? []).map((r) => r.source_routine_id as string));
+  const rows = routines
+    .filter((r) => !seen.has(r.id))
+    .map((r) => ({
+      user_id: userId,
+      day,
+      time: r.time,
+      title: r.title,
+      done: false,
+      duration: r.duration ?? null,
+      energy: r.energy ?? null,
+      source_routine_id: r.id,
+    }));
+  if (!rows.length) return;
+  const { error } = await supabase.from("planner_tasks").insert(rows);
+  if (error && error.code !== "23505") throw error;
 }
 
 // ---------- Habits ----------
