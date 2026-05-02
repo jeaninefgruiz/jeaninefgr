@@ -55,6 +55,55 @@ export async function deletePlannerTask(id: string) {
   if (error) throw error;
 }
 
+// ---------- Routines (recurring) ----------
+export async function fetchRoutines(userId: string): Promise<RoutineTask[]> {
+  const { data, error } = await supabase
+    .from("routine_tasks")
+    .select("id,period,time,title,duration,energy,position")
+    .eq("user_id", userId)
+    .order("position");
+  if (error) throw error;
+  return (data ?? []) as RoutineTask[];
+}
+
+export async function upsertRoutine(userId: string, r: RoutineTask) {
+  const { error } = await supabase.from("routine_tasks").upsert({
+    id: r.id, user_id: userId, period: r.period, time: r.time, title: r.title,
+    duration: r.duration ?? null, energy: r.energy ?? null, position: r.position,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw error;
+}
+
+export async function deleteRoutine(id: string) {
+  const { error } = await supabase.from("routine_tasks").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// Materialize routines into today's planner if not already added.
+// Uses a deterministic id "routine-{routineId}-{day}" to prevent duplicates.
+export async function materializeRoutinesForDay(userId: string, day: string) {
+  const routines = await fetchRoutines(userId);
+  if (!routines.length) return;
+  const existing = await fetchPlanner(userId, day);
+  const existingIds = new Set(existing.map((t) => t.id));
+  const rows = routines
+    .map((r) => ({
+      id: `routine-${r.id}-${day}`,
+      user_id: userId,
+      day,
+      time: r.time,
+      title: r.title,
+      done: false,
+      duration: r.duration ?? null,
+      energy: r.energy ?? null,
+    }))
+    .filter((row) => !existingIds.has(row.id));
+  if (!rows.length) return;
+  const { error } = await supabase.from("planner_tasks").upsert(rows, { onConflict: "id" });
+  if (error) throw error;
+}
+
 // ---------- Habits ----------
 export async function fetchHabits(userId: string, day = todayKey()): Promise<Habits> {
   const { data, error } = await supabase
