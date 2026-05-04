@@ -1,0 +1,1 @@
+ALTER TABLE public.habits_daily ADD COLUMN IF NOT EXISTS skincare_night integer NOT NULL DEFAULT 0;

@@ -23,7 +23,7 @@ export type RoutineTask = {
   energy?: TaskEnergy | null;
   position: number;
 };
-export type Habits = { water: number; skincare: boolean; sleep: number };
+export type Habits = { water: number; skincare: boolean; skincareNight: boolean; sleep: number };
 export type WeekPlan = Record<string, string | null>;
 export type WorkoutTime = "06:00" | "18:00";
 
@@ -113,17 +113,28 @@ export async function materializeRoutinesForDay(userId: string, day: string) {
 // ---------- Habits ----------
 export async function fetchHabits(userId: string, day = todayKey()): Promise<Habits> {
   const { data, error } = await supabase
-    .from("habits_daily").select("water,steps,sleep")
+    .from("habits_daily").select("water,steps,skincare_night,sleep")
     .eq("user_id", userId).eq("day", day).maybeSingle();
   if (error) throw error;
   return data
-    ? { water: data.water, skincare: (data.steps ?? 0) > 0, sleep: Number(data.sleep) }
-    : { water: 0, skincare: false, sleep: 0 };
+    ? {
+        water: data.water,
+        skincare: (data.steps ?? 0) > 0,
+        skincareNight: (data.skincare_night ?? 0) > 0,
+        sleep: Number(data.sleep),
+      }
+    : { water: 0, skincare: false, skincareNight: false, sleep: 0 };
 }
 
 export async function saveHabits(userId: string, day: string, h: Habits) {
   const { error } = await supabase.from("habits_daily").upsert(
-    { user_id: userId, day, water: h.water, steps: h.skincare ? 1 : 0, sleep: h.sleep, updated_at: new Date().toISOString() },
+    {
+      user_id: userId, day, water: h.water,
+      steps: h.skincare ? 1 : 0,
+      skincare_night: h.skincareNight ? 1 : 0,
+      sleep: h.sleep,
+      updated_at: new Date().toISOString(),
+    },
     { onConflict: "user_id,day" }
   );
   if (error) throw error;

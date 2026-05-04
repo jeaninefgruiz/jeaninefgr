@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           day: string
           id: string
+          skincare_night: number
           sleep: number
           steps: number
           updated_at: string
@@ -27,6 +28,7 @@ export type Database = {
         Insert: {
           day: string
           id?: string
+          skincare_night?: number
           sleep?: number
           steps?: number
           updated_at?: string
@@ -36,6 +38,7 @@ export type Database = {
         Update: {
           day?: string
           id?: string
+          skincare_night?: number
           sleep?: number
           steps?: number
           updated_at?: string

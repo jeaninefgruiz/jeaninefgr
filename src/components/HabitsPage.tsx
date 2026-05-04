@@ -6,11 +6,11 @@ import { fetchHabits, saveHabits, type Habits } from "@/lib/cloudStorage";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
-const goals = { water: 8, sleep: 8 };
+const goals = { water: 3, sleep: 8 };
 
 export const HabitsPage = () => {
   const { user } = useAuth();
-  const [h, setH] = useState<Habits>({ water: 0, skincare: false, sleep: 0 });
+  const [h, setH] = useState<Habits>({ water: 0, skincare: false, skincareNight: false, sleep: 0 });
   const day = todayKey();
   const loadedRef = useRef(false);
   const saveTimer = useRef<number | null>(null);
@@ -76,8 +76,8 @@ export const HabitsPage = () => {
         <h1 className="font-display text-3xl font-bold tracking-tight">Hábitos</h1>
       </div>
 
-      <Card icon={Droplet} label="Água" value={h.water} unit="copos" goal={goals.water} color="primary"
-        onChange={(v) => setH((p) => ({ ...p, water: v }))} />
+      <Card icon={Droplet} label="Água" value={h.water} unit="L" goal={goals.water} color="primary" step={0.25}
+        onChange={(v) => setH((p) => ({ ...p, water: Math.round(v * 4) / 4 }))} />
 
       <button
         type="button"
@@ -90,7 +90,7 @@ export const HabitsPage = () => {
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Skincare</p>
+              <p className="text-xs text-muted-foreground">Skincare diurno</p>
               <p className="text-xl font-bold">
                 {h.skincare ? "Feito hoje" : "Pendente"}
               </p>
@@ -110,6 +110,41 @@ export const HabitsPage = () => {
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
           <div
             className={cn("h-full rounded-full transition-all", h.skincare ? "gradient-success w-full" : "w-0")}
+          />
+        </div>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setH((p) => ({ ...p, skincareNight: !p.skincareNight }))}
+        className="w-full rounded-3xl bg-card p-5 text-left shadow-card transition-all active:scale-[0.99]"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl gradient-warm text-accent-foreground">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Skincare noturno</p>
+              <p className="text-xl font-bold">
+                {h.skincareNight ? "Feito hoje" : "Pendente"}
+              </p>
+            </div>
+          </div>
+          <div
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-2xl border-2 transition-all",
+              h.skincareNight
+                ? "gradient-warm border-accent text-accent-foreground shadow-success"
+                : "border-border bg-muted text-muted-foreground"
+            )}
+          >
+            <Check className="h-5 w-5" strokeWidth={3} />
+          </div>
+        </div>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+          <div
+            className={cn("h-full rounded-full transition-all", h.skincareNight ? "gradient-warm w-full" : "w-0")}
           />
         </div>
       </button>
