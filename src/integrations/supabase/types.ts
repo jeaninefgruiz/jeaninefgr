@@ -91,9 +91,11 @@ export type Database = {
       }
       routine_tasks: {
         Row: {
+          anchor_date: string | null
           created_at: string
           duration: string | null
           energy: string | null
+          frequency: string
           id: string
           period: string
           position: number
@@ -101,11 +103,14 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          weekday: number | null
         }
         Insert: {
+          anchor_date?: string | null
           created_at?: string
           duration?: string | null
           energy?: string | null
+          frequency?: string
           id?: string
           period?: string
           position?: number
@@ -113,11 +118,14 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          weekday?: number | null
         }
         Update: {
+          anchor_date?: string | null
           created_at?: string
           duration?: string | null
           energy?: string | null
+          frequency?: string
           id?: string
           period?: string
           position?: number
@@ -125,6 +133,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          weekday?: number | null
         }
         Relationships: []
       }

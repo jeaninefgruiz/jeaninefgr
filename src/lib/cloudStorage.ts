@@ -14,6 +14,7 @@ export type PlannerTask = {
 };
 
 export type RoutinePeriod = "morning" | "afternoon" | "evening";
+export type RoutineFrequency = "daily" | "weekly" | "biweekly";
 export type RoutineTask = {
   id: string;
   period: RoutinePeriod;
@@ -22,6 +23,9 @@ export type RoutineTask = {
   duration?: TaskDuration | null;
   energy?: TaskEnergy | null;
   position: number;
+  frequency?: RoutineFrequency;
+  weekday?: number | null; // 0=Sun..6=Sat
+  anchor_date?: string | null; // YYYY-MM-DD, for biweekly
 };
 export type Habits = { water: number; skincare: boolean; skincareNight: boolean; sleep: number };
 export type WeekPlan = Record<string, string | null>;
@@ -59,7 +63,7 @@ export async function deletePlannerTask(id: string) {
 export async function fetchRoutines(userId: string): Promise<RoutineTask[]> {
   const { data, error } = await supabase
     .from("routine_tasks")
-    .select("id,period,time,title,duration,energy,position")
+    .select("id,period,time,title,duration,energy,position,frequency,weekday,anchor_date")
     .eq("user_id", userId)
     .order("position");
   if (error) throw error;
@@ -70,6 +74,9 @@ export async function upsertRoutine(userId: string, r: RoutineTask) {
   const { error } = await supabase.from("routine_tasks").upsert({
     id: r.id, user_id: userId, period: r.period, time: r.time, title: r.title,
     duration: r.duration ?? null, energy: r.energy ?? null, position: r.position,
+    frequency: r.frequency ?? "daily",
+    weekday: r.weekday ?? null,
+    anchor_date: r.anchor_date ?? null,
     updated_at: new Date().toISOString(),
   });
   if (error) throw error;
@@ -93,8 +100,22 @@ export async function materializeRoutinesForDay(userId: string, day: string) {
     .not("source_routine_id", "is", null);
   if (exErr) throw exErr;
   const seen = new Set((existing ?? []).map((r) => r.source_routine_id as string));
+  const dayDate = new Date(`${day}T00:00:00`);
+  const dayWeekday = dayDate.getDay();
+  const applies = (r: RoutineTask) => {
+    const freq = r.frequency ?? "daily";
+    if (freq === "daily") return true;
+    if (r.weekday == null || r.weekday !== dayWeekday) return false;
+    if (freq === "weekly") return true;
+    // biweekly: same weekday AND even number of weeks since anchor_date
+    if (!r.anchor_date) return true;
+    const anchor = new Date(`${r.anchor_date}T00:00:00`);
+    const diffDays = Math.round((dayDate.getTime() - anchor.getTime()) / 86400000);
+    if (diffDays < 0) return false;
+    return Math.floor(diffDays / 7) % 2 === 0;
+  };
   const rows = routines
-    .filter((r) => !seen.has(r.id))
+    .filter((r) => !seen.has(r.id) && applies(r))
     .map((r) => ({
       user_id: userId,
       day,
