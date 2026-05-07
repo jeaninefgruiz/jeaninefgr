@@ -1,0 +1,1 @@
+ALTER TABLE public.workout_history ADD COLUMN IF NOT EXISTS minutes integer;

@@ -175,9 +175,14 @@ export async function fetchWorkoutHistory(userId: string): Promise<Record<string
   return out;
 }
 
-export async function logWorkoutDone(userId: string, day: string, workoutId: string) {
+export async function logWorkoutDone(
+  userId: string,
+  day: string,
+  workoutId: string,
+  minutes?: number | null
+) {
   const { error } = await supabase.from("workout_history").upsert(
-    { user_id: userId, day, workout_id: workoutId },
+    { user_id: userId, day, workout_id: workoutId, minutes: minutes ?? null },
     { onConflict: "user_id,day,workout_id" }
   );
   if (error) throw error;
@@ -201,6 +206,19 @@ export async function fetchWorkoutHistoryForDay(userId: string, day: string): Pr
     .eq("day", day);
   if (error) throw error;
   return (data ?? []).map((r) => r.workout_id as string);
+}
+
+export async function fetchWorkoutHistoryDetailForDay(
+  userId: string,
+  day: string
+): Promise<Array<{ workout_id: string; minutes: number | null }>> {
+  const { data, error } = await supabase
+    .from("workout_history")
+    .select("workout_id,minutes")
+    .eq("user_id", userId)
+    .eq("day", day);
+  if (error) throw error;
+  return (data ?? []) as Array<{ workout_id: string; minutes: number | null }>;
 }
 
 // ---------- Week plan ----------

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Calendar, Sun, Moon, CalendarIcon, Check } from "lucide-react";
+import { ChevronRight, Calendar, Sun, Moon, CalendarIcon, Check, Heart } from "lucide-react";
 import { WORKOUTS, Workout } from "@/data/workouts";
 import { cn } from "@/lib/utils";
 import {
@@ -7,12 +7,13 @@ import {
   saveWeekPlan,
   fetchPrefs,
   savePrefs as savePrefsCloud,
-  fetchWorkoutHistoryForDay,
+  fetchWorkoutHistoryDetailForDay,
   logWorkoutDone,
   unlogWorkoutDone,
   type WeekPlan,
   type WorkoutTime,
 } from "@/lib/cloudStorage";
+import { Input } from "@/components/ui/input";
 import { syncGymTaskToToday } from "@/lib/prefs";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useMemo, useState } from "react";
@@ -46,6 +47,7 @@ export const WorkoutsPage = () => {
   const [loaded, setLoaded] = useState(false);
   const [logDate, setLogDate] = useState<Date>(new Date());
   const [dayDone, setDayDone] = useState<Set<string>>(new Set());
+  const [cardioMin, setCardioMin] = useState<string>("");
   const [logLoading, setLogLoading] = useState(false);
 
   const dayKey = useMemo(() => format(logDate, "yyyy-MM-dd"), [logDate]);
@@ -53,9 +55,16 @@ export const WorkoutsPage = () => {
   useEffect(() => {
     if (!user) return;
     setLogLoading(true);
-    fetchWorkoutHistoryForDay(user.id, dayKey)
-      .then((ids) => setDayDone(new Set(ids)))
-      .catch(() => setDayDone(new Set()))
+    fetchWorkoutHistoryDetailForDay(user.id, dayKey)
+      .then((rows) => {
+        setDayDone(new Set(rows.map((r) => r.workout_id)));
+        const c = rows.find((r) => r.workout_id === "CARDIO");
+        setCardioMin(c?.minutes ? String(c.minutes) : "");
+      })
+      .catch(() => {
+        setDayDone(new Set());
+        setCardioMin("");
+      })
       .finally(() => setLogLoading(false));
   }, [user, dayKey]);
 
@@ -68,14 +77,27 @@ export const WorkoutsPage = () => {
     try {
       if (has) {
         await unlogWorkoutDone(user.id, dayKey, wid);
+        if (wid === "CARDIO") setCardioMin("");
         toast.success("Treino desmarcado");
       } else {
-        await logWorkoutDone(user.id, dayKey, wid);
+        const min = wid === "CARDIO" && cardioMin ? Number(cardioMin) : null;
+        await logWorkoutDone(user.id, dayKey, wid, min);
         toast.success(`Treino ${wid} marcado em ${format(logDate, "dd/MM")}`);
       }
     } catch {
       setDayDone(dayDone);
       toast.error("Não foi possível salvar");
+    }
+  };
+
+  const saveCardioMinutes = async (val: string) => {
+    setCardioMin(val);
+    if (!user || !dayDone.has("CARDIO")) return;
+    const min = val ? Number(val) : null;
+    try {
+      await logWorkoutDone(user.id, dayKey, "CARDIO", min);
+    } catch {
+      toast.error("Não foi possível salvar minutos");
     }
   };
 
@@ -209,7 +231,7 @@ export const WorkoutsPage = () => {
             />
           </PopoverContent>
         </Popover>
-        <div className="mt-3 grid grid-cols-4 gap-2">
+        <div className="mt-3 grid grid-cols-5 gap-2">
           {WORKOUTS.map((w) => {
             const checked = dayDone.has(w.id);
             return (
@@ -237,7 +259,48 @@ export const WorkoutsPage = () => {
               </button>
             );
           })}
+          {(() => {
+            const checked = dayDone.has("CARDIO");
+            return (
+              <button
+                type="button"
+                disabled={logLoading}
+                onClick={() => toggleDayWorkout("CARDIO")}
+                className={cn(
+                  "flex flex-col items-center gap-1 rounded-2xl border-2 p-2 transition-all active:scale-95",
+                  checked
+                    ? "border-primary bg-primary-soft shadow-glow"
+                    : "border-border bg-background hover:border-primary/40"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-xl",
+                    checked ? "gradient-warm text-accent-foreground" : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {checked ? <Check className="h-4 w-4" strokeWidth={3} /> : <Heart className="h-4 w-4" />}
+                </div>
+                <span className="text-[10px] font-semibold">Cardio</span>
+              </button>
+            );
+          })()}
         </div>
+        {dayDone.has("CARDIO") && (
+          <div className="mt-3 flex items-center gap-2">
+            <label className="text-xs font-medium text-muted-foreground">Minutos de cardio:</label>
+            <Input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              placeholder="opcional"
+              value={cardioMin}
+              onChange={(e) => setCardioMin(e.target.value)}
+              onBlur={(e) => saveCardioMinutes(e.target.value)}
+              className="h-8 w-24 rounded-xl"
+            />
+          </div>
+        )}
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
           Toque para marcar/desmarcar treinos no dia selecionado.
         </p>
