@@ -13,6 +13,7 @@ import {
   type RoutinePeriod,
   type TaskDuration,
   type TaskEnergy,
+  type RoutineFrequency,
 } from "@/lib/cloudStorage";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -24,14 +25,31 @@ const PERIODS: { id: RoutinePeriod; label: string; Icon: typeof Sun; defaultTime
   { id: "evening", label: "Noite", Icon: Moon, defaultTime: "21:00" },
 ];
 
+const WEEKDAYS = [
+  { id: 0, short: "D" },
+  { id: 1, short: "S" },
+  { id: 2, short: "T" },
+  { id: 3, short: "Q" },
+  { id: 4, short: "Q" },
+  { id: 5, short: "S" },
+  { id: 6, short: "S" },
+];
+const WEEKDAY_LABEL = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
 export const RoutinesPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [routines, setRoutines] = useState<RoutineTask[]>([]);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<{ period: RoutinePeriod; time: string; title: string; duration: TaskDuration | null; energy: TaskEnergy | null }>(
-    { period: "morning", time: "07:00", title: "", duration: null, energy: null }
-  );
+  const [form, setForm] = useState<{
+    period: RoutinePeriod;
+    time: string;
+    title: string;
+    duration: TaskDuration | null;
+    energy: TaskEnergy | null;
+    frequency: RoutineFrequency;
+    weekday: number | null;
+  }>({ period: "morning", time: "07:00", title: "", duration: null, energy: null, frequency: "daily", weekday: null });
 
   useEffect(() => {
     if (!user) return;
@@ -40,12 +58,16 @@ export const RoutinesPage = () => {
 
   const openAdd = (period: RoutinePeriod) => {
     const def = PERIODS.find((p) => p.id === period)!;
-    setForm({ period, time: def.defaultTime, title: "", duration: null, energy: null });
+    setForm({ period, time: def.defaultTime, title: "", duration: null, energy: null, frequency: "daily", weekday: null });
     setOpen(true);
   };
 
   const save = async () => {
     if (!user || !form.title.trim()) return;
+    if (form.frequency !== "daily" && form.weekday == null) {
+      toast.error("Escolha um dia da semana");
+      return;
+    }
     const r: RoutineTask = {
       id: crypto.randomUUID(),
       period: form.period,
@@ -54,6 +76,9 @@ export const RoutinesPage = () => {
       duration: form.duration,
       energy: form.energy,
       position: routines.filter((x) => x.period === form.period).length,
+      frequency: form.frequency,
+      weekday: form.frequency === "daily" ? null : form.weekday,
+      anchor_date: form.frequency === "biweekly" ? new Date().toISOString().slice(0, 10) : null,
     };
     setRoutines((prev) => [...prev, r]);
     await upsertRoutine(user.id, r);
@@ -106,6 +131,8 @@ export const RoutinesPage = () => {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{r.title}</p>
                       <div className="mt-0.5 flex gap-1 text-[10px] text-muted-foreground">
+                        <span>{freqLabel(r)}</span>
+                        {(r.duration || r.energy) && <span>·</span>}
                         {r.duration && <span>{durationLabel(r.duration)}</span>}
                         {r.duration && r.energy && <span>·</span>}
                         {r.energy && <span>{energyLabel(r.energy)}</span>}
@@ -157,6 +184,42 @@ export const RoutinesPage = () => {
                 autoFocus
               />
             </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Frequência</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(["daily", "weekly", "biweekly"] as RoutineFrequency[]).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setForm((s) => ({ ...s, frequency: f }))}
+                    className={cn(
+                      "rounded-2xl border-2 p-2 text-xs transition-all",
+                      form.frequency === f ? "border-primary bg-primary-soft" : "border-border"
+                    )}
+                  >
+                    {f === "daily" ? "Todo dia" : f === "weekly" ? "Semanal" : "Quinzenal"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {form.frequency !== "daily" && (
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Dia da semana</label>
+                <div className="flex gap-1">
+                  {WEEKDAYS.map((w) => (
+                    <button
+                      key={w.id}
+                      onClick={() => setForm((s) => ({ ...s, weekday: w.id }))}
+                      className={cn(
+                        "h-9 flex-1 rounded-xl border-2 text-xs font-medium transition-all",
+                        form.weekday === w.id ? "border-primary bg-primary-soft" : "border-border"
+                      )}
+                    >
+                      {w.short}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <DurationEnergyPicker
               duration={form.duration}
               energy={form.energy}
@@ -178,4 +241,10 @@ function durationLabel(d: TaskDuration) {
 }
 function energyLabel(e: TaskEnergy) {
   return e === "light" ? "🌱 Leve" : e === "medium" ? "💪 Média" : "🔥 Pesada";
+}
+function freqLabel(r: RoutineTask) {
+  const f = r.frequency ?? "daily";
+  if (f === "daily") return "Todo dia";
+  const wd = r.weekday != null ? WEEKDAY_LABEL[r.weekday] : "";
+  return f === "weekly" ? `Toda ${wd}` : `${wd} (quinz.)`;
 }
