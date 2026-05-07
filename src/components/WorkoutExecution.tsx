@@ -14,10 +14,24 @@ type SetLog = { weight: string; reps: string; done: boolean };
 type ExerciseLog = { sets: SetLog[] };
 
 const parseRestSeconds = (rest: string) => {
-  const m = rest.match(/(\d+)/g);
-  if (!m) return 60;
-  const nums = m.map(Number);
-  return Math.max(...nums);
+  if (!rest || rest.trim() === "—") return 60;
+  // Find all time tokens: "1:30", "1min30s", "90s", "1 min", "1:10 min"
+  const candidates: number[] = [];
+  const re = /(\d+)\s*(?::|min|m\b)\s*(\d+)?\s*s?|(\d+)\s*s\b/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(rest)) !== null) {
+    if (match[3]) candidates.push(parseInt(match[3], 10));
+    else {
+      const m = parseInt(match[1], 10);
+      const s = match[2] ? parseInt(match[2], 10) : 0;
+      candidates.push(m * 60 + s);
+    }
+  }
+  if (candidates.length === 0) {
+    const n = parseInt(rest, 10);
+    return Number.isFinite(n) && n > 0 ? n : 60;
+  }
+  return Math.max(...candidates);
 };
 const parseSets = (s: string) => Math.max(1, parseInt(s, 10) || 3);
 
@@ -104,6 +118,11 @@ export const WorkoutExecution = () => {
     }
   };
 
+  const startRest = (seconds: number) => {
+    setRestLeft(seconds);
+    setRestRunning(true);
+  };
+
   const next = () => setIdx((i) => Math.min(total - 1, i + 1));
   const prev = () => setIdx((i) => Math.max(0, i - 1));
 
@@ -155,6 +174,23 @@ export const WorkoutExecution = () => {
         {current.notes && (
           <p className="mt-3 rounded-xl bg-primary-soft p-3 text-xs text-primary">💡 {current.notes}</p>
         )}
+
+        {/* Quick rest starters */}
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground">Iniciar descanso:</span>
+          <button
+            onClick={() => startRest(60)}
+            className="rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary active:scale-95"
+          >
+            1:00
+          </button>
+          <button
+            onClick={() => startRest(90)}
+            className="rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary active:scale-95"
+          >
+            1:30
+          </button>
+        </div>
 
         {/* Sets */}
         <div className="mt-4 space-y-2">
