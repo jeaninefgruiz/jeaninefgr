@@ -45,6 +45,28 @@ export async function fetchPlanner(userId: string, day = todayKey()): Promise<Pl
   return (data ?? []) as PlannerTask[];
 }
 
+export async function fetchPlannerRange(
+  userId: string,
+  startDay: string,
+  endDay: string
+): Promise<Record<string, PlannerTask[]>> {
+  const { data, error } = await supabase
+    .from("planner_tasks")
+    .select("id,time,title,done,duration,energy,day")
+    .eq("user_id", userId)
+    .gte("day", startDay)
+    .lte("day", endDay)
+    .order("time");
+  if (error) throw error;
+  const map: Record<string, PlannerTask[]> = {};
+  for (const row of (data ?? []) as (PlannerTask & { day: string })[]) {
+    if (!map[row.day]) map[row.day] = [];
+    const { day: _d, ...rest } = row as any;
+    map[row.day].push(rest);
+  }
+  return map;
+}
+
 export async function upsertPlannerTask(userId: string, day: string, t: PlannerTask) {
   const { error } = await supabase.from("planner_tasks").upsert({
     id: t.id, user_id: userId, day, time: t.time, title: t.title, done: t.done,
